@@ -1,0 +1,136 @@
+[
+  {
+    "type": "POST",
+    "url": "/article/create",
+    "title": "文章创建",
+    "name": "create",
+    "group": "Article",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>文章名称</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "status",
+            "description": "<p>状态 0草稿 1发布 2下架</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "content",
+            "description": "<p>文章内容</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/article.js",
+    "groupTitle": "Article"
+  },
+  {
+    "type": "DELETE",
+    "url": "/article/delete/:id",
+    "title": "删除文章",
+    "name": "deleteArticle",
+    "group": "Article",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "id",
+            "description": "<p>文章ID</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/article.js",
+    "groupTitle": "Article"
+  },
+  {
+    "type": "GET",
+    "url": "/",
+    "title": "获取文章列表",
+    "name": "getArticle",
+    "group": "Article",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "page",
+            "description": "<p>页数</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "pageSize",
+            "description": "<p>条数</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>标题</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Date",
+            "optional": false,
+            "field": "time",
+            "description": "<p>日期  YYYY-MM-DD</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/article.js",
+    "groupTitle": "Article"
+  },
+  {
+    "type": "post",
+    "url": "/article/setStatus/:id",
+    "title": "修改文章状态",
+    "name": "setStatus",
+    "group": "Article",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>文章ID</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "status",
+            "description": "<p>文章状态 0草稿 1发布 2下架</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/article.js",
+    "groupTitle": "Article"
+  }
+]

@@ -1,5 +1,7 @@
 'use strict';
 
+const path = require('path');
+
 module.exports = appInfo => {
   const config = exports = {};
 
@@ -9,6 +11,11 @@ module.exports = appInfo => {
   // add your config here
   config.middleware = [];
   
+  config.assets = {
+    prefix: '/static/',
+    dir: path.join(appInfo.baseDir, 'app/public')
+  }
+
   config.security = {
     domainWhiteList: [ 'http://localhost:8080' ],
     csrf: {
@@ -28,7 +35,7 @@ module.exports = appInfo => {
     database: 'blog',
     username: 'root',
     password: 'root',
-    // pool: {
+    // pool: {    //连接池设置
     //   max: 5,
     //   min: 0,
     //   acquire: 30000,

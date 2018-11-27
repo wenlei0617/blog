@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "blog",
   "private": true,
+  "apidoc": {
+    "title": "apidoc",
+    "url": "http://localhost:7001"
+  },
   "dependencies": {
     "egg": "^2.2.1",
     "egg-cors": "^2.1.1",
@@ -35,7 +39,8 @@
     "cov": "egg-bin cov",
     "lint": "eslint .",
     "ci": "npm run lint && npm run cov",
-    "autod": "autod"
+    "autod": "autod",
+    "apidoc": "apidoc -i app/controller -o app/public/apidoc/"
   },
   "ci": {
     "version": "8"

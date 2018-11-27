@@ -24,6 +24,13 @@ module.exports = app => {
         },
         status: {
             type: ENUM(0 ,1 ,2),
+            validate: {
+                customFun(val) {
+                    if(val !== 0 || val !==1 || val!==2) {
+                        throw new Error('status字段为INT 0 1 2')
+                    }
+                }
+            },
             get() {
                 const status = this.getDataValue('status');
                 switch (status) {
@@ -40,7 +47,10 @@ module.exports = app => {
         },
         content: {
             type: TEXT,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
         },
         created_at: {
             type: DATE,
