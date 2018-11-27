@@ -39,25 +39,9 @@
 export default {
     data() {
         return {
-            active: '5'
+            active: '1'
         }
     },
-    // created: function() {
-    //     let active = '';
-    //     this.$store.state.navmenu.forEach(item => {
-    //         if(item.path && this.$route.path === item.path) {
-    //             active = item.id;
-    //         }
-    //         if(!item.path) {
-    //             item.children.forEach(subItem => {
-    //                 if(subItem.path === this.$route.path) {
-    //                     active = subItem.id;
-    //                 }
-    //             })
-    //         }
-    //     })
-    //     this.active = active;
-    // },
     watch: {
         '$route': {
             handler(){

@@ -10,7 +10,7 @@ const router = new Router({
 		{
 			path: '/',
 			component: Layout,
-			redirect: '/article',
+			redirect: 'article',
 			children: [
 				{
 					path: 'article',
@@ -39,6 +39,7 @@ const router = new Router({
 
 //此处做路由鉴权和动态状态注册
 router.beforeEach(async (to, from, next) => {
+	next();
 	// if (to.name === 'login') {
 	// 	next();
 	// } else {

@@ -10,9 +10,15 @@ module.exports = appInfo => {
   config.middleware = [];
   
   config.security = {
+    domainWhiteList: [ 'http://localhost:8080' ],
     csrf: {
       enable: false
     }
+  }
+
+  config.cors = {
+    origin: '*',
+    allowMethods: 'GET,HEAD,PUT,DELETE,PATCH,POST'
   }
 
   config.sequelize = {

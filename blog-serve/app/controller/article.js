@@ -7,15 +7,25 @@ class ArticleController extends Controller {
 	 * 列表
 	 */
 	async index() {
-		const { ctx } = this;
+		const { ctx, app } = this;
 		const { Op } = this.app.Sequelize;
-		const { page = 1, pageSize = 20, keyword = '' } = ctx.query;
-		const res = await this.ctx.model.Article.findAndCountAll({
-			where: {
-				name: {
-					[Op.like]: `%${keyword}`
-				}
-			},
+		const { page = 1, pageSize = 10, name, status, created_at } = ctx.query;
+		let where = {};
+		if(name) {
+			where.name = {
+				[Op.like]: `%${name}`
+			}
+		}
+		if(status) {
+			where.status = status;
+		}
+		if(created_at) {
+			where.created_at = {
+				[Op.between]: [`${created_at.trim()} 00:00:00`, `${created_at.trim()} 23:59:59`]
+			}
+		}
+		const res = await app.model.Article.findAndCountAll({
+			where,
 			limit: parseInt(pageSize),
 			offset: (parseInt(page) - 1) * pageSize
 		});

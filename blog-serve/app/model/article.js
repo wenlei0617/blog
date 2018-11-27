@@ -1,5 +1,7 @@
 'use strict';
 
+const moment = require('moment');
+
 module.exports = app => {
     const { STRING, INTEGER, DATE, ENUM, TEXT } = app.Sequelize;
 
@@ -40,8 +42,20 @@ module.exports = app => {
             type: TEXT,
             allowNull: false
         },
-        created_at: DATE,
-        updated_at: DATE
+        created_at: {
+            type: DATE,
+            get() {
+                const time = this.getDataValue('created_at');
+                const gtime = moment(time).utc().format('YYYY-MM-DD HH:mm:ss');
+                return gtime;
+            },
+        },
+        updated_at: {
+            type: DATE,
+            get() {
+                return moment(this.getDataValue('updated_at')).utc().format('YYYY-MM-DD HH:mm:ss')
+            }
+        }
     });
 
     return Article;

@@ -6,7 +6,7 @@
             <div class="layout-header_btns">
                 <el-button class="layout-header_btns--margin" type="text" @click="showDialog">修改密码</el-button>
                 <el-button class="layout-header_btns--margin" type="text" @click="loginOut">退出登录</el-button>
-                <span class="layout-header_btns--text">{{$store.state.userInfo.name}}</span>
+                <span class="layout-header_btns--text">admin</span>
                 <img class="layout-header_btns--head" src="~@/assets/logo@2x.png" alt="">
             </div>
         </header>
@@ -16,10 +16,7 @@
             </div>
             <div class="layout-right">      
                 <transition name="el-fade-in-linear">
-                    <keep-alive include="inspectionTask,maintenanceTask,issueReport,complaint">
-                        <router-view></router-view>
-                    </keep-alive>
-                    <!-- <router-view v-else/>    -->
+                    <router-view></router-view>
                 </transition> 
             </div>
         </section>
@@ -27,18 +24,12 @@
             <el-form ref="changePwd" label-width="80px" class="dialog-form--style" :model="form">
                 <el-form-item 
                     label="新密码" 
-                    prop="password"
-                    :rules="[
-                        { validator: _passwordValidate, trigger: 'blur', required: true }
-                    ]">
+                    prop="password">
                     <el-input type="password" v-model="form.password"/>
                 </el-form-item>
                 <el-form-item 
                     label="确认密码" 
-                    prop="checkPassword"
-                    :rules="[
-                        { validator: _equalValidate, trigger: 'blur', required: true, equal: form.password }
-                    ]">
+                    prop="checkPassword">
                     <el-input type="password" v-model="form.checkPassword"/>
                 </el-form-item>
                 <el-form-item>
