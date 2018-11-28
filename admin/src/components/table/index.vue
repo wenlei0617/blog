@@ -113,7 +113,7 @@ export default {
         margin-top: 0;
     }
     .pagination-search{
-        margin: 40px 0 20px;
+        margin: 20px 0 20px;
     }
     .pagination{
         margin-top: 20px;

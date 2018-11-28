@@ -7,10 +7,14 @@ module.exports = appInfo => {
 
   // use for cookie sign key, should change to your own and keep security
   config.keys = appInfo.name + '_1543216502739_8075';
-
+  config.urlPrefix = 'localhost:7001'
   // add your config here
   config.middleware = [];
   
+  config.multipart = {
+    mode: 'file'
+  }
+
   config.assets = {
     prefix: '/static/',
     dir: path.join(appInfo.baseDir, 'app/public')

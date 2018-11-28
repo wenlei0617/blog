@@ -6,16 +6,17 @@ module.exports = app => {
     const { STRING, INTEGER, DATE, ENUM, TEXT } = app.Sequelize;
 
     const Article = app.model.define('blog_article', {
-        id: { type: INTEGER, primaryKey: true, autoIncrement: true },
+        id: { 
+            type: INTEGER, 
+            primaryKey: true, 
+            autoIncrement: true 
+        },
         name: {
             type: STRING(50),
             allowNull: false,
             validate: {
-                customFun(val) {
-                    if(val.length >= 50) {
-                        throw new Error('name字段长度过长')
-                    }
-                }
+                notEmpty: true,
+                len: [1, 50]
             }
         },
         thumbs_up: {
@@ -25,24 +26,30 @@ module.exports = app => {
         status: {
             type: ENUM(0 ,1 ,2),
             validate: {
-                customFun(val) {
-                    if(val !== 0 || val !==1 || val!==2) {
-                        throw new Error('status字段为INT 0 1 2')
-                    }
-                }
+                isIn: [[0,1,2,'0','1','2']]
             },
-            get() {
-                const status = this.getDataValue('status');
-                switch (status) {
-                    case 0:
-                        return '草稿';
-                    case 1:
-                        return '发布';
-                    case 2:
-                        return '下架';
-                    default:
-                        return '';
-                }
+            // get() {
+            //     const status = this.getDataValue('status');
+            //     let statusName;
+            //     switch (status) {
+            //         case 0:
+            //             statusName = '草稿';
+            //             break;
+            //         case 1:
+            //             statusName = '发布';
+            //             break;
+            //         case 2:
+            //             statusName = '下架';
+            //             break;
+            //         default:
+            //             statusName = '';
+            //             break;
+            //     }
+            //     this.setDataValue('status_name', statusName);
+            //     return status;
+            // },
+            set(val) {
+                this.setDataValue('status', parseInt(val))
             }
         },
         content: {
@@ -64,6 +71,28 @@ module.exports = app => {
             type: DATE,
             get() {
                 return moment(this.getDataValue('updated_at')).utc().format('YYYY-MM-DD HH:mm:ss')
+            }
+        }
+    }, {
+        getterMethods: {
+            status_name() {
+                const status = this.getDataValue('status');
+                let statusName;
+                switch (status) {
+                    case 0:
+                        statusName = '草稿';
+                        break;
+                    case 1:
+                        statusName = '发布';
+                        break;
+                    case 2:
+                        statusName = '下架';
+                        break;
+                    default:
+                        statusName = '';
+                        break;
+                }
+                return statusName;
             }
         }
     });

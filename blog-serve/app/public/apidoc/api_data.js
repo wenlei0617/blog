@@ -1,9 +1,9 @@
 define({ "api": [
   {
     "type": "POST",
-    "url": "/article/create",
+    "url": "/article/createOrUpdate",
     "title": "文章创建",
-    "name": "create",
+    "name": "createOrUpdate",
     "group": "Article",
     "version": "1.0.0",
     "parameter": {
@@ -29,6 +29,13 @@ define({ "api": [
             "optional": false,
             "field": "content",
             "description": "<p>文章内容</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "id",
+            "description": "<p>文章id 有ID则更新，无ID则创建</p>"
           }
         ]
       }
@@ -61,7 +68,7 @@ define({ "api": [
   },
   {
     "type": "GET",
-    "url": "/",
+    "url": "/article/getList",
     "title": "获取文章列表",
     "name": "getArticle",
     "group": "Article",
@@ -96,6 +103,29 @@ define({ "api": [
             "optional": false,
             "field": "time",
             "description": "<p>日期  YYYY-MM-DD</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/article.js",
+    "groupTitle": "Article"
+  },
+  {
+    "type": "GET",
+    "url": "/article/getDetail/:id",
+    "title": "获取文章详情",
+    "name": "getDetail",
+    "group": "Article",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>文章ID</p>"
           }
         ]
       }

@@ -18,7 +18,7 @@ const router = new Router({
 					name: 'article'
 				},
 				{
-					path: 'article/:id?',
+					path: 'article/add/:id?',
 					component: () => import('@/views/article/add.vue'),
 					name: 'article-add'
 				}
