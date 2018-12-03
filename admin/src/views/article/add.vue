@@ -17,7 +17,7 @@
                 :rules="[
                     { required: true, message: '请输入文章内容', trigger: 'blur' }
                 ]">
-                <vue-editor style="line-height:normal;" v-model="data.content"/>
+                <vue-editor :useCustomImageHandler="true" @imageAdded="handleImageAdded" style="line-height:normal;" v-model="data.content"/>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="onSubmit(0)">保存为草稿</el-button>
@@ -80,6 +80,14 @@ export default {
                     })
                 }else{
                     return false;
+                }
+            })
+        },
+        handleImageAdded(file, Editor, cursorLocation, resetUploader) {
+            this.$api.Article.uploadFile(file).then(res => {
+                if(res) {
+                    Editor.insertEmbed(cursorLocation, 'image', res.data);
+                    resetUploader();
                 }
             })
         }

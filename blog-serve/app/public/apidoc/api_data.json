@@ -2,7 +2,7 @@
   {
     "type": "POST",
     "url": "/article/createOrUpdate",
-    "title": "文章创建",
+    "title": "文章创建或更新",
     "name": "createOrUpdate",
     "group": "Article",
     "version": "1.0.0",
@@ -162,5 +162,28 @@
     },
     "filename": "app/controller/article.js",
     "groupTitle": "Article"
+  },
+  {
+    "type": "POST",
+    "url": "/basics/uploadFiles",
+    "title": "上传文件",
+    "name": "uploadFiles",
+    "group": "Basics",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Files",
+            "optional": false,
+            "field": "files",
+            "description": "<p>文件</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/basics.js",
+    "groupTitle": "Basics"
   }
 ]

@@ -194,6 +194,7 @@ class ArticleController extends Controller {
 		if(id) {
 			try {
 				const result = await app.model.Article.findById(id);
+				result.content = ctx.helper.shtml(decodeURIComponent(result.content));
 				ctx.body = {
 					code: 200,
 					data: result,

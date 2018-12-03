@@ -17,5 +17,10 @@ export const Article = {
     },
     getDetail(id) {
         return http.get('/article/getDetail/'+id)
+    },
+    uploadFile(file) {
+        let form = new FormData();
+        form.append('files', file);
+        return http.post('/basics/uploadFiles', form)
     }
 }
