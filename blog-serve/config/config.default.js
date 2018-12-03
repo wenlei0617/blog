@@ -9,7 +9,7 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1543216502739_8075';
   config.urlPrefix = 'http://localhost:7001'
   // add your config here
-  config.middleware = [];
+  config.middleware = [ 'errorHandler' ];
   
   config.multipart = {
     mode: 'file'
@@ -21,7 +21,7 @@ module.exports = appInfo => {
   }
 
   config.security = {
-    domainWhiteList: [ 'http://localhost:8080' ],
+    domainWhiteList: [ 'http://localhost:7001/public/' ],
     csrf: {
       enable: false
     }

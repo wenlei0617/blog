@@ -5,11 +5,13 @@
  */
 module.exports = app => {
   const { router, controller } = app;
-  router.get('/article/getList', controller.article.index);
-  router.post('/article/createOrUpdate', controller.article.create);
-  router.delete('/article/delete/:id', controller.article.delete);
-  router.post('/article/setStatus/:id', controller.article.setStatus);
-  router.get('/article/getDetail/:id', controller.article.getDetail);
+  router.get('/article/getList', app.middleware.jwt(), controller.article.index);
+  router.post('/article/createOrUpdate', app.middleware.jwt(), controller.article.create);
+  router.delete('/article/delete/:id', app.middleware.jwt(), controller.article.delete);
+  router.post('/article/setStatus/:id', app.middleware.jwt(), controller.article.setStatus);
+  router.get('/article/getDetail/:id', app.middleware.jwt(), controller.article.getDetail);
 
-  router.post('/basics/uploadFiles', controller.basics.uploadFiles);
+  router.post('/basics/uploadFiles', app.middleware.jwt(), controller.basics.uploadFiles);
+
+  router.post('/login/loginIn', controller.login.loginIn);
 };

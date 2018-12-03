@@ -28,26 +28,6 @@ module.exports = app => {
             validate: {
                 isIn: [[0,1,2,'0','1','2']]
             },
-            // get() {
-            //     const status = this.getDataValue('status');
-            //     let statusName;
-            //     switch (status) {
-            //         case 0:
-            //             statusName = '草稿';
-            //             break;
-            //         case 1:
-            //             statusName = '发布';
-            //             break;
-            //         case 2:
-            //             statusName = '下架';
-            //             break;
-            //         default:
-            //             statusName = '';
-            //             break;
-            //     }
-            //     this.setDataValue('status_name', statusName);
-            //     return status;
-            // },
             set(val) {
                 this.setDataValue('status', parseInt(val))
             }
