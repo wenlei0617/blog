@@ -23,6 +23,11 @@ const router = new Router({
 					name: 'article-add'
 				}
 			]
+		},
+		{
+			path: '/login',
+			component: () => import('@/views/login.vue'),
+			name: 'login'
 		}
 	],
 	scrollBehavior(to, from, savedPosition) {
@@ -39,17 +44,15 @@ const router = new Router({
 
 //此处做路由鉴权和动态状态注册
 router.beforeEach(async (to, from, next) => {
-	next();
-	// if (to.name === 'login') {
-	// 	next();
-	// } else {
-	// 	// 没有登陆
-	// 	if (!sessionStorage.getItem('TOKEN')) {
-	// 		next({name: 'login'});
-	// 	} else { // 登陆了
-	// 		next();
-	// 	}
-	// }
+	if (to.name === 'login') {
+		next();
+	} else {
+		if (!sessionStorage.getItem('authorization')) {
+			next({name: 'login'});
+		} else { // 登陆了
+			next();
+		}
+	}
 })
 
 export default router;

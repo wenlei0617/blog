@@ -15,13 +15,21 @@ module.exports = appInfo => {
     mode: 'file'
   }
 
-  config.assets = {
-    prefix: '/static/',
-    dir: path.join(appInfo.baseDir, 'app/public')
+  config.static = {
+    prefix: '/',
+    dir: path.join(appInfo.baseDir, 'app/public/')
+  }
+
+  config.view = {
+    defaultViewEngine: 'ejs',
+    root: path.join(appInfo.baseDir, 'app/view'),
+    mapping: {
+      '.html': 'ejs'
+    }
   }
 
   config.security = {
-    domainWhiteList: [ 'http://localhost:7001/public/' ],
+    domainWhiteList: [ 'http://localhost:7001', 'http://localhost:8080' ],
     csrf: {
       enable: false
     }

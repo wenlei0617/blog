@@ -2,6 +2,7 @@
 
 const Controller = require('egg').Controller;
 const jwt = require('jsonwebtoken');
+const cache = require('memory-cache');
 
 class LoginController extends Controller {
     /**
@@ -15,7 +16,7 @@ class LoginController extends Controller {
      */
     async loginIn() {
         const { ctx, app } = this;
-        const { account, password } = ctx.request.body;
+        const { account, password, id, code } = ctx.request.body;
         ctx.validate({
             account: {
                 type: 'string',
@@ -24,8 +25,28 @@ class LoginController extends Controller {
             password: {
                 type: 'string',
                 required: true
+            },
+            id: {
+                type: 'string',
+                required: true
+            },
+            code: {
+                type: 'string',
+                required: true
             }
         })
+        //先验证验证码
+        const codeCache = cache.get(id);
+        if(code.toLocaleLowerCase() !== codeCache) {
+            cache.del(id);
+            ctx.body = {
+                code: 202,
+                data: '',
+                message: '验证码输入有误'
+            }
+            return;
+        }
+
         const user = await app.model.User.findOne({
             where: {
                 account,

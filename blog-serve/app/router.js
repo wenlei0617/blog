@@ -11,7 +11,16 @@ module.exports = app => {
   router.post('/article/setStatus/:id', app.middleware.jwt(), controller.article.setStatus);
   router.get('/article/getDetail/:id', app.middleware.jwt(), controller.article.getDetail);
 
+  // 基础接口
   router.post('/basics/uploadFiles', app.middleware.jwt(), controller.basics.uploadFiles);
+  router.get('/basic/getCaptcha', controller.basics.createCaptcha);
 
+  // 后台登陆接口
   router.post('/login/loginIn', controller.login.loginIn);
+
+  // 博客前端页面
+  router.get('/', controller.article.render);
+  router.get('/:id', controller.article.renderDetail);
+
+  router.get('/test', controller.test.render);
 };

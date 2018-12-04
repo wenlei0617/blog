@@ -61,51 +61,36 @@ class ArticleController extends Controller {
 		const { ctx, app } = this;
 		const  { name, status, content, id } = ctx.request.body;
 		if(id) {
-			try {
-				await app.model.Article.update({
-					name,
-					status,
-					content: encodeURIComponent(content)
-				}, {
-					where: {
-						id
-					}
-				})
-				ctx.body = {
-					code: 200,
-					data: '',
-					msg: '修改成功'
-				}
-				return;
-			} catch (error) {
-				ctx.body = {
-					code: 500,
-					data: '',
-					msg: '内部异常'
-				};
-				return;
-			}
-		}
-
-		try {
-			const res = await app.model.Article.create({
+			await app.model.Article.update({
 				name,
 				status,
 				content: encodeURIComponent(content)
-			});
-			res.content = ctx.helper.shtml(decodeURIComponent(res.content))
+			}, {
+				where: {
+					id
+				}
+			})
 			ctx.body = {
 				code: 200,
-				data: res,
-				msg: '操作成功'
-			};
-		} catch (error) {
-			ctx.body = {
-				code: 500,
-				data: error,
-				msg: '内部异常'
-			};
+				data: '',
+				msg: '修改成功'
+			}
+			return;
 		}
+
+		const res = await app.model.Article.create({
+			name,
+			status,
+			content: encodeURIComponent(content)
+		});
+
+
+		res.content = ctx.helper.shtml(decodeURIComponent(res.content));
+		ctx.body = {
+			code: 200,
+			data: res,
+			msg: '操作成功'
+		};
 	}
 	/**
 	 * 
@@ -127,24 +112,16 @@ class ArticleController extends Controller {
 			}
 			return;
 		}
-		try {
-			await app.model.Article.destroy({
-				where: {
-					id
-				}
-			})
-			ctx.body = {
-				code: 200,
-				data: '',
-				msg: '删除成功'
-			}	
-		} catch (error) {
-			ctx.body = {
-				code: 500,
-				data: error,
-				msg: '内部异常'
+		await app.model.Article.destroy({
+			where: {
+				id
 			}
-		}
+		})
+		ctx.body = {
+			code: 200,
+			data: '',
+			msg: '删除成功'
+		}	
 	}
 	/** 
 	 * @api {post} /article/setStatus/:id 修改文章状态
@@ -159,26 +136,19 @@ class ArticleController extends Controller {
 		const { ctx, app } = this;
 		const id = parseInt(ctx.params.id);
 		const status = ctx.request.body.status;
-		try {
-			await app.model.Article.update({
-				status
-			},{
-				where: {
-					id
-				}
-			});
-			ctx.body = {
-				code: 200,
-				data: '',
-				msg: '操作成功'
-			};
-		} catch (error) {
-			ctx.body = {
-				code: 500,
-				data: error,
-				msg: '内部异常'
-			};
-		}
+
+		await app.model.Article.update({
+			status
+		},{
+			where: {
+				id
+			}
+		});
+		ctx.body = {
+			code: 200,
+			data: '',
+			msg: '操作成功'
+		};
 	}
 	/**
 	 * @api {GET} /article/getDetail/:id 获取文章详情
@@ -192,29 +162,41 @@ class ArticleController extends Controller {
 		const { ctx, app } = this;
 		const id = parseInt(ctx.params.id);
 		if(id) {
-			try {
-				const result = await app.model.Article.findById(id);
-				result.content = decodeURIComponent(result.content);
-				ctx.body = {
-					code: 200,
-					data: result,
-					msg: ''
-				}
-				return;
-			} catch (error) {
-				ctx.body = {
-					code: 500,
-					data: error,
-					msg: ''
-				}
-				return;
+			const result = await app.model.Article.findById(id);
+			result.content = decodeURIComponent(result.content);
+			ctx.body = {
+				code: 200,
+				data: result,
+				msg: ''
 			}
+			return;
 		}
 		ctx.body = {
 			code: 10001,
 			data: '',
 			msg: '参数异常'
 		}
+	}
+	/**
+	 * 博客首页
+	 */
+	async render() {
+		const { ctx, app } = this;
+		const list = await app.model.Article.findAll();
+		await ctx.render('basic/index.html', {
+			data: list
+		})
+	}
+	/**
+	 * 文章详情
+	 */
+	async renderDetail() {
+		const { ctx, app } = this;
+		const article = await app.model.Article.findById(ctx.params.id);
+		article.content = decodeURIComponent(article.content);
+		await ctx.render('basic/article.html', {
+			data: article
+		})
 	}
 }
 

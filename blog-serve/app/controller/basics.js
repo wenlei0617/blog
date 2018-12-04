@@ -4,6 +4,9 @@ const Controller = require('egg').Controller;
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const captcha = require('svg-captcha');
+const cache = require('memory-cache');
+const uuid = require('node-uuid');
 
 class BasicsController extends Controller {
     /**
@@ -21,7 +24,8 @@ class BasicsController extends Controller {
                             .digest('hex');
         const fileArr = file.mime.split('/');
         const fileType = fileArr[fileArr.length-1];
-        const filepath = `/public/static/${name}.${fileType}`;
+        const filepath = `/public/static/images/${name}.${fileType}`;
+        const webpath = `/static/images/${name}.${fileType}`;
         const url = this.config.urlPrefix
         try {
             const readStream = fs.createReadStream(file.filepath);
@@ -29,7 +33,7 @@ class BasicsController extends Controller {
             readStream.pipe(writeStream);
             this.ctx.body = {
                 code: 200,
-                data: url + filepath,
+                data: url + webpath,
                 msg: ''
             }
         } catch(error) {
@@ -41,6 +45,25 @@ class BasicsController extends Controller {
         } finally {
             await fs.unlink(file.filepath);
         }
+    }
+
+    async createCaptcha() {
+        let svg = captcha.create({
+            height: 40,
+            width: 130,
+            size: 4,
+            noise: 4
+        });
+        const id = uuid.v1();
+        cache.put(id, svg.text.toLocaleLowerCase(), 1000 * 60 * 60 * 1);
+        this.ctx.body = {
+            code: 200,
+            data: {
+                svg: svg.data,
+                id
+            },
+            message: ''
+        };
     }
 }
 

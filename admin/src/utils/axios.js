@@ -12,7 +12,7 @@ http.defaults.headers.common['deviceType'] = 3;
 
 // 请求前拦截器
 http.interceptors.request.use(function(config) {
-    config.headers.common['Authorization'] = sessionStorage.getItem('TOKEN');
+    config.headers.common['authorization'] = sessionStorage.getItem('authorization');
     return config;
 }, function(error) {
     return Promise.reject(error);

@@ -1,0 +1,10 @@
+<%- include('header.html'); -%>
+    <div class="detail">
+        <h1 class="detail-title"><%= data.name %></h1>
+        <p class="detail-time">
+            <span><%= data.updated_at %></span>
+            <span>点赞数:<%= data.thumbs_up %></span>
+        </p>
+        <div class="detail-text"><%- data.content %></div>
+    </div>
+<%- include('footer.html'); -%>
