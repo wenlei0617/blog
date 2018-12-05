@@ -1,6 +1,6 @@
 'use strict';
 
-const Controller = require('egg').Controller;
+const Controller = require('./index');
 const jwt = require('jsonwebtoken');
 const cache = require('memory-cache');
 
@@ -39,11 +39,7 @@ class LoginController extends Controller {
         const codeCache = cache.get(id);
         if(code.toLocaleLowerCase() !== codeCache) {
             cache.del(id);
-            ctx.body = {
-                code: 202,
-                data: '',
-                message: '验证码输入有误'
-            }
+            this.serviceError(10002);
             return;
         }
 
@@ -68,18 +64,10 @@ class LoginController extends Controller {
                 }
             })
             user.token = token;
-            ctx.body = {
-                code: 200,
-                msg: '',
-                data: user
-            };
+            this.success(user);
             return;
         }
-        ctx.body = {
-            code: 201,
-            msg: '账号或密码错误',
-            data: ''
-        }
+        this.serviceError(10003);
     }
 }
 

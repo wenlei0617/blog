@@ -134,6 +134,69 @@
     "groupTitle": "Article"
   },
   {
+    "type": "GET",
+    "url": "/article/getType",
+    "title": "获取文章专题列表",
+    "name": "getType",
+    "group": "Article",
+    "version": "1.0.0",
+    "filename": "app/controller/article.js",
+    "groupTitle": "Article"
+  },
+  {
+    "type": "GET",
+    "url": "/article/removeType",
+    "title": "删除专题",
+    "name": "removeType",
+    "group": "Article",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>专题ID</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/article.js",
+    "groupTitle": "Article"
+  },
+  {
+    "type": "GET",
+    "url": "/article/setRecommend",
+    "title": "设置是否推荐",
+    "name": "setRecommend",
+    "group": "Article",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>文章ID</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Enum",
+            "optional": false,
+            "field": "is_recommend",
+            "description": "<p>0不推荐  1推荐</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/article.js",
+    "groupTitle": "Article"
+  },
+  {
     "type": "post",
     "url": "/article/setStatus/:id",
     "title": "修改文章状态",
@@ -165,6 +228,36 @@
   },
   {
     "type": "POST",
+    "url": "/article/setType",
+    "title": "设置文章专题",
+    "name": "setType",
+    "group": "Article",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>专题名字</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "desc",
+            "description": "<p>专题描述</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/article.js",
+    "groupTitle": "Article"
+  },
+  {
+    "type": "POST",
     "url": "/basics/uploadFiles",
     "title": "上传文件",
     "name": "uploadFiles",
@@ -185,5 +278,35 @@
     },
     "filename": "app/controller/basics.js",
     "groupTitle": "Basics"
+  },
+  {
+    "type": "method",
+    "url": "/login/loginIn",
+    "title": "后台登陆",
+    "name": "loginIn",
+    "group": "Login",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "account",
+            "description": "<p>账户</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "string",
+            "optional": false,
+            "field": "password",
+            "description": "<p>密码</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/login.js",
+    "groupTitle": "Login"
   }
 ]

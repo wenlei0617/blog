@@ -39,18 +39,47 @@ module.exports = app => {
                 notEmpty: true
             }
         },
+        keywords: {
+            type: STRING(255),
+            allowNull: true,
+            validate: {
+                len: [0, 200]
+            }
+        },
+        description: {
+            type: STRING(255),
+            allowNull: true,
+            validate: {
+                len: [0, 200]
+            }
+        },
+        type_id: {
+            type: INTEGER,
+            allowNull: false,
+            validate: {
+                notEmpty: true
+            }
+        },
+        is_recommend: {
+            type: INTEGER,
+            allowNull: false,
+            validate: {
+                notEmpty: true,
+                isIn: [[0, 1]]
+            }
+        },
         created_at: {
             type: DATE,
             get() {
                 const time = this.getDataValue('created_at');
-                const gtime = moment(time).utc().format('YYYY-MM-DD HH:mm:ss');
+                const gtime = moment(time).format('YYYY-MM-DD HH:mm:ss');
                 return gtime;
-            },
+            }
         },
         updated_at: {
             type: DATE,
             get() {
-                return moment(this.getDataValue('updated_at')).utc().format('YYYY-MM-DD HH:mm:ss')
+                return moment(this.getDataValue('updated_at')).format('YYYY-MM-DD HH:mm:ss')
             }
         }
     }, {

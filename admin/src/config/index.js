@@ -7,12 +7,24 @@ export const NAVMENU = [
     {
         name: '文章管理',
         id: '1',
-        className: 'icon-renwuguanli',
+        className: 'el-icon-document',
         children: [
             {
                 name: '文章列表',
                 path: '/article',
-                id: '1'
+                id: '2'
+            }
+        ]
+    },
+    {
+        name: '系统管理',
+        id: '3',
+        className: 'el-icon-setting',
+        children: [
+            {
+                name: '专题配置',
+                path: '/article-type',
+                id: '4'
             }
         ]
     }

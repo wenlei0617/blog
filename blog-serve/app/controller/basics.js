@@ -1,6 +1,6 @@
 'use strict';
 
-const Controller = require('egg').Controller;
+const Controller = require('./index');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -31,17 +31,9 @@ class BasicsController extends Controller {
             const readStream = fs.createReadStream(file.filepath);
             const writeStream = fs.createWriteStream(path.join(this.config.baseDir, '/app/', filepath));
             readStream.pipe(writeStream);
-            this.ctx.body = {
-                code: 200,
-                data: url + webpath,
-                msg: ''
-            }
+            this.success(url+webpath);
         } catch(error) {
-            this.ctx.body = {
-                code: 500,
-                data: error,
-                msg: '内部异常'
-            }
+            new Error(error);
         } finally {
             await fs.unlink(file.filepath);
         }
@@ -56,14 +48,10 @@ class BasicsController extends Controller {
         });
         const id = uuid.v1();
         cache.put(id, svg.text.toLocaleLowerCase(), 1000 * 60 * 60 * 1);
-        this.ctx.body = {
-            code: 200,
-            data: {
-                svg: svg.data,
-                id
-            },
-            message: ''
-        };
+        this.success({
+            svg: svg.data,
+            id
+        })
     }
 }
 

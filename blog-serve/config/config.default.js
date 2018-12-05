@@ -53,6 +53,7 @@ module.exports = appInfo => {
     //   acquire: 30000,
     //   idle: 10000
     // },
+    timezone: '+08:00',
     define: {             
       // timestamps: false,     // 去除createAt, updateAt
       freezeTableName: true,   //  使用自定义表名

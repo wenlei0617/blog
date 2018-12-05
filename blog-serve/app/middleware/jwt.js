@@ -21,7 +21,6 @@ module.exports = () => {
                 }                  
                 return;
             }
-            await next();
         } catch (error) {
             ctx.status = 401;
             ctx.body = {
@@ -31,5 +30,6 @@ module.exports = () => {
             }    
             return;
         }
+        await next();
     }
 }

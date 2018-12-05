@@ -12,7 +12,7 @@
                     :index="item.id" 
                     :key="item.id">
                     <template slot="title">
-                        <i class="iconfont" :class="item.className"></i>
+                        <i :class="item.className"></i>
                         <span>{{item.name}}</span>
                     </template>
                     <el-menu-item-group v-if="item.children.length">

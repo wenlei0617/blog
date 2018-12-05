@@ -5,17 +5,18 @@
             class="pagination-search" 
             :inline="true" 
             size="small"
-            v-if="isSearch">
+            >
            <slot name="search"></slot>
             <el-form-item>
-                <el-button type="primary" @click="search">搜索</el-button>
+                <el-button v-if="isSearch" type="primary" @click="search">搜索</el-button>
                 <el-button v-if="isExcel" type="primary" @click="getExcel">导出</el-button>
             </el-form-item>
         </el-form>
-        <el-table class="common-el-table" :border="true" :data="tableData" v-loading="loading">
+        <el-table size="small" class="common-el-table" :border="true" :data="tableData" v-loading="loading">
             <slot name="table"></slot>
         </el-table>
         <el-pagination
+            v-if="isPage"
             class="pagination"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
@@ -51,6 +52,12 @@ export default {
         api: {
             type: String,
             required: true
+        },
+        isPage: {
+            type: Boolean,
+            default: () => {
+                return true
+            }
         }
     },
     data() {
@@ -75,8 +82,12 @@ export default {
                 pageSize: this.pageSize
             }).then(res => {
                 if(res) {
-                    this.tableData = res.data.rows;
-                    this.total = res.data.count;
+                    if(this.isPage) {
+                        this.tableData = res.data.rows;
+                        this.total = res.data.count;
+                    }else{
+                        this.tableData = res.data;
+                    }
                 }
                 setTimeout(() => {
                    this.loading = false; 

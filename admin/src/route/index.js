@@ -21,6 +21,16 @@ const router = new Router({
 					path: 'article/add/:id?',
 					component: () => import('@/views/article/add.vue'),
 					name: 'article-add'
+				},
+				{
+					path: 'article-type',
+					component: () => import('@/views/articleType/index.vue'),
+					name:'article-type'
+				},
+				{
+					path: 'article-type/add/:id?',
+					component: () => import('@/views/articleType/add.vue'),
+					name: 'article-type-add'
 				}
 			]
 		},

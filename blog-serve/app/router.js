@@ -10,6 +10,11 @@ module.exports = app => {
   router.delete('/article/delete/:id', app.middleware.jwt(), controller.article.delete);
   router.post('/article/setStatus/:id', app.middleware.jwt(), controller.article.setStatus);
   router.get('/article/getDetail/:id', app.middleware.jwt(), controller.article.getDetail);
+  router.get('/article/getType', app.middleware.jwt(), controller.article.getType);
+  router.post('/article/setType', app.middleware.jwt(), controller.article.setType);
+  router.delete('/article/removeType/:id', app.middleware.jwt(), controller.article.removeType);
+  router.get('/article/getTypeById/:id', app.middleware.jwt(), controller.article.getTypeById)
+  router.get('/article/setRecommend/:id/:is_recommend', app.middleware.jwt(), controller.article.setRecommend);
 
   // 基础接口
   router.post('/basics/uploadFiles', app.middleware.jwt(), controller.basics.uploadFiles);
@@ -22,5 +27,5 @@ module.exports = app => {
   router.get('/', controller.article.render);
   router.get('/:id', controller.article.renderDetail);
 
-  router.get('/test', controller.test.render);
+  // router.get('/test', controller.test.render);
 };
