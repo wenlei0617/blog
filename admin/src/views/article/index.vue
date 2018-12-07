@@ -63,8 +63,8 @@
                 </el-table-column>
                 <el-table-column prop="thumbs_up" label="阅读量"></el-table-column>
                 <!-- <el-table-column prop="created_at" label="创建时间"></el-table-column> -->
-                <el-table-column prop="updated_at" label="修改时间"></el-table-column>
-                <el-table-column label="备注">
+                <el-table-column prop="updated_at" label="修改时间" width="140px"></el-table-column>
+                <el-table-column label="备注" width="200px">
                     <template slot-scope="scope">
                         <el-button type="text" @click="getDetail(scope.row.id)">详情</el-button>
                         <el-button type="text" @click="remove(scope)">删除</el-button>

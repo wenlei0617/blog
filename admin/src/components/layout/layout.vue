@@ -1,8 +1,8 @@
 <template>
     <div class="layout">
         <header class="layout-header">
-            <img class="layout-header_logo" src="~@/assets/logo@2x.png" alt="">
-            <img class="layout-header_title" src="~@/assets/name-green.png" alt="">
+            <!-- <img class="layout-header_logo" src="~@/assets/logo@2x.png" alt=""> -->
+            <!-- <img class="layout-header_title" src="~@/assets/name-green.png" alt=""> -->
             <div class="layout-header_btns">
                 <el-button class="layout-header_btns--margin" type="text" @click="showDialog">修改密码</el-button>
                 <el-button class="layout-header_btns--margin" type="text" @click="loginOut">退出登录</el-button>

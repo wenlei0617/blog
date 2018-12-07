@@ -1,6 +1,7 @@
 'use strict';
 
 const Controller = require('egg').Controller;
+const jwt = require('jsonwebtoken');
 
 class IndexController extends Controller {
     // 成功  200
@@ -36,6 +37,14 @@ class IndexController extends Controller {
             message,
             data
         }
+    }
+
+    // 根据TOKEN获取用户ID
+    getUserInfo() {
+        const token = this.ctx.request.headers['authorization'];
+        const tokenData = jwt.decode(token);
+
+        return tokenData;
     }
 }
 

@@ -25,6 +25,11 @@ export const NAVMENU = [
                 name: '专题配置',
                 path: '/article-type',
                 id: '4'
+            },
+            {
+                name: '网站配置',
+                path: '/webconfig',
+                id: '5'
             }
         ]
     }

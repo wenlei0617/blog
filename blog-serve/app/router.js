@@ -18,14 +18,16 @@ module.exports = app => {
 
   // 基础接口
   router.post('/basics/uploadFiles', app.middleware.jwt(), controller.basics.uploadFiles);
-  router.get('/basic/getCaptcha', controller.basics.createCaptcha);
+  router.get('/basics/getCaptcha', controller.basics.createCaptcha);
+  router.get('/basics/getWebConfig', app.middleware.jwt(), controller.basics.getWebConfig);
+  router.post('/basics/setWebConfig', app.middleware.jwt(), controller.basics.setWebConfig);
 
   // 后台登陆接口
   router.post('/login/loginIn', controller.login.loginIn);
+  router.post('/login/loginOut', app.middleware.jwt(), controller.login.loginOut);
+  router.post('/login/updatePwd', app.middleware.jwt(), controller.login.updatePwd)
 
   // 博客前端页面
   router.get('/', controller.article.render);
   router.get('/:id', controller.article.renderDetail);
-
-  // router.get('/test', controller.test.render);
 };

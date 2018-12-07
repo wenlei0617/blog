@@ -249,12 +249,104 @@
             "optional": false,
             "field": "desc",
             "description": "<p>专题描述</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>专题ID</p>"
           }
         ]
       }
     },
     "filename": "app/controller/article.js",
     "groupTitle": "Article"
+  },
+  {
+    "type": "GET",
+    "url": "/basics/getCaptcha",
+    "title": "获取验证码",
+    "name": "getCaptcha",
+    "group": "Basics",
+    "version": "1.0.0",
+    "filename": "app/controller/basics.js",
+    "groupTitle": "Basics"
+  },
+  {
+    "type": "GET",
+    "url": "/basics/getWebConfig",
+    "title": "获取网站配置",
+    "name": "getWebConfig",
+    "group": "Basics",
+    "version": "1.0.0",
+    "filename": "app/controller/basics.js",
+    "groupTitle": "Basics"
+  },
+  {
+    "type": "Post",
+    "url": "/basics/setWebConfig",
+    "title": "设置网站配置",
+    "name": "setWebConfig",
+    "group": "Basics",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "web_name",
+            "description": "<p>网站名称</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "web_keywords",
+            "description": "<p>网站关键字</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "web_desc",
+            "description": "<p>网站描述</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "web_wechat_image",
+            "description": "<p>公众号微信二维码</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "company_tel",
+            "description": "<p>公司电话</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "company_address",
+            "description": "<p>公司地址</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "company_name",
+            "description": "<p>公司名称</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/basics.js",
+    "groupTitle": "Basics"
   },
   {
     "type": "POST",
@@ -302,6 +394,39 @@
             "optional": false,
             "field": "password",
             "description": "<p>密码</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/login.js",
+    "groupTitle": "Login"
+  },
+  {
+    "type": "POST",
+    "url": "/login/loginOut",
+    "title": "退出登录",
+    "name": "loginOut",
+    "group": "Login",
+    "version": "1.0.0",
+    "filename": "app/controller/login.js",
+    "groupTitle": "Login"
+  },
+  {
+    "type": "POST",
+    "url": "/login/updatePwd",
+    "title": "修改密码",
+    "name": "updatePwd",
+    "group": "Login",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>新密码</p>"
           }
         ]
       }

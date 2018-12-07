@@ -69,6 +69,52 @@ class LoginController extends Controller {
         }
         this.serviceError(10003);
     }
+    /**
+     * 
+     * @api {POST} /login/loginOut 退出登录
+     * @apiName loginOut
+     * @apiGroup Login
+     * @apiVersion  1.0.0
+     * 
+     */
+    async loginOut() {
+        const { app } = this;
+        const tokenData = this.getUserInfo();
+
+        await app.model.User.update({
+            token: ''
+        }, {
+            where: {
+                id: tokenData.id
+            }
+        });
+
+        this.success();
+    }
+    /**
+     * 
+     * @api {POST} /login/updatePwd 修改密码
+     * @apiName updatePwd
+     * @apiGroup Login
+     * @apiVersion  1.0.0
+     * 
+     * @apiParam  {String} password 新密码
+     */
+    async updatePwd() {
+        const { app, ctx } = this;
+        const { password } = ctx.request.body;
+        const tokenData = this.getUserInfo();
+
+        await app.model.User.update({
+            password 
+        }, {
+            where: {
+                id: tokenData.id
+            }
+        });
+
+        this.success();
+    }
 }
 
 module.exports = LoginController;

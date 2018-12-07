@@ -31,6 +31,11 @@ const router = new Router({
 					path: 'article-type/add/:id?',
 					component: () => import('@/views/articleType/add.vue'),
 					name: 'article-type-add'
+				},
+				{
+					path: 'webconfig',
+					component: () => import('@/views/webConfig/index.vue'),
+					name: 'webconfig'
 				}
 			]
 		},
