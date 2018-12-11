@@ -40,6 +40,13 @@ class ArticleController extends Controller {
 		}
 
 		const res = await app.model.Article.findAndCountAll({
+			include: [
+				{
+					model: app.model.ArticleType,
+					attributes: ['id','name'],
+					as: 'article_type'
+				},
+			],
 			where,
 			order: [
 				['updated_at', 'DESC']

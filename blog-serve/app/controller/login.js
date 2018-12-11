@@ -6,7 +6,7 @@ const cache = require('memory-cache');
 
 class LoginController extends Controller {
     /**
-     * @api {method} /login/loginIn 后台登陆
+     * @api {POST} /login/loginIn 后台登陆
      * @apiName loginIn
      * @apiGroup Login
      * @apiVersion  1.0.0

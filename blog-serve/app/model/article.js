@@ -106,5 +106,9 @@ module.exports = app => {
         }
     });
 
+    Article.associate = function() {
+        app.model.Article.belongsTo(app.model.ArticleType, { foreignKey: 'type_id', targetKey: 'id', as: 'article_type' })
+    }
+
     return Article;
 }

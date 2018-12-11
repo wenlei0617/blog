@@ -52,8 +52,7 @@
             <template slot="table">
                 <el-table-column type="index" label="序号" width="50px" align="center"></el-table-column>
                 <el-table-column prop="name" label="标题"></el-table-column>
-                <el-table-column label="专题">
-
+                <el-table-column label="专题" prop="article_type.name">
                 </el-table-column>
                 <el-table-column prop="status_name" label="状态"></el-table-column>
                 <el-table-column label="是否推荐">

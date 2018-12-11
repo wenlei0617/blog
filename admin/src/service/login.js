@@ -6,5 +6,13 @@ export const Login = {
     },
     loginIn(data) {
         return http.post('/login/loginIn', data);
+    },
+    loginOut() {
+        return http.post('/login/loginOut')
+    },
+    updatePwd(data) {
+        return http.post('/login/updatePwd', {
+            password: data
+        })
     }
 }

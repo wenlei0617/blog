@@ -24,12 +24,19 @@
             <el-form ref="changePwd" label-width="80px" class="dialog-form--style" :model="form">
                 <el-form-item 
                     label="新密码" 
-                    prop="password">
+                    prop="password"
+                    :rules="[
+                        { required: true, message: '请输入新密码', trigger: 'blur' }
+                    ]">
                     <el-input type="password" v-model="form.password"/>
                 </el-form-item>
                 <el-form-item 
                     label="确认密码" 
-                    prop="checkPassword">
+                    prop="checkPassword"
+                    :rules="[
+                        { required: true, message: '请输入新密码', trigger: 'blur' },
+                        { validator: validatePwd, trigger: 'blur'}
+                    ]">
                     <el-input type="password" v-model="form.checkPassword"/>
                 </el-form-item>
                 <el-form-item>
@@ -59,13 +66,43 @@ export default {
     },
     methods: {
         loginOut() {
-            
+            this.$api.Login.loginOut().then(res => {
+                if(res) {
+                    sessionStorage.clear();
+                    this.$notify.success({
+                        title: '提示',
+                        message: '操作成功'
+                    });
+                    this.$router.push('/login');
+                }
+            })
+        },
+        validatePwd(rule, value, callback) {
+            if(value !== this.form.password) {
+                callback(new Error('两次密码输入有误'))
+            }else{
+                callback();
+            }
         },
         showDialog() {
             this.dialogVisible = true;
         },
         onSubmit() {
-
+            this.$refs.changePwd.validate(validate => {
+                if(validate) {
+                    this.$api.Login.updatePwd(this.form.password).then(res => {
+                        if(res) {
+                            this.$notify.success({
+                                title: '提示',
+                                message: '修改密码成功'
+                            })
+                            this.dialogVisible = false;
+                        }
+                    })
+                }else{
+                    return false;
+                }
+            })
         }
     }
 }

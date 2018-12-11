@@ -27,6 +27,7 @@ class IndexController extends Controller {
                 break;
             case 10002:
                 message = '验证码输入有误';
+                break;
             case 10003:
                 message = '账号或密码错误';
             default:
