@@ -72,6 +72,9 @@ export default {
     box-sizing: border-box;
     width: 100%;
     overflow: auto;
+    .el-menu-item-group__title{
+        padding: 0 !important;
+    }
 }
 .el-menu-item.is-active{
     background: #009688 !important;

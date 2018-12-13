@@ -264,6 +264,100 @@
     "groupTitle": "Article"
   },
   {
+    "type": "POST",
+    "url": "/banner/createOrUpdate",
+    "title": "创建或更新",
+    "name": "createOrUpdate",
+    "group": "Banner",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "desc",
+            "description": "<p>描述</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "id",
+            "description": ""
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "article_id",
+            "description": ""
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "cover",
+            "description": "<p>封面图地址</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/banner.js",
+    "groupTitle": "Banner"
+  },
+  {
+    "type": "DELETE",
+    "url": "/banner/delete/:id",
+    "title": "删除轮播图",
+    "name": "delete",
+    "group": "Banner",
+    "version": "1.0.0",
+    "filename": "app/controller/banner.js",
+    "groupTitle": "Banner"
+  },
+  {
+    "type": "GET",
+    "url": "/banner/getDetail/:id",
+    "title": "获取轮播图详情",
+    "name": "getDetail",
+    "group": "Banner",
+    "version": "1.0.0",
+    "filename": "app/controller/banner.js",
+    "groupTitle": "Banner"
+  },
+  {
+    "type": "GET",
+    "url": "/banner/getList",
+    "title": "获取轮播图列表",
+    "name": "getList",
+    "group": "Banner",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "pageSize",
+            "description": ""
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "page",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/banner.js",
+    "groupTitle": "Banner"
+  },
+  {
     "type": "GET",
     "url": "/basics/getCaptcha",
     "title": "获取验证码",
@@ -372,7 +466,7 @@
     "groupTitle": "Basics"
   },
   {
-    "type": "method",
+    "type": "POST",
     "url": "/login/loginIn",
     "title": "后台登陆",
     "name": "loginIn",
@@ -433,5 +527,112 @@
     },
     "filename": "app/controller/login.js",
     "groupTitle": "Login"
+  },
+  {
+    "type": "POST",
+    "url": "/user/createOrUpdate",
+    "title": "修改或创建管理员",
+    "name": "createOrUpdate",
+    "group": "User",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Int",
+            "optional": false,
+            "field": "id",
+            "description": "<p>管理员ID</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "name",
+            "description": "<p>管理员姓名</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "account",
+            "description": "<p>管理员账号</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "role",
+            "description": "<p>管理员权限</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/user.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "GET",
+    "url": "/user/delete/:id",
+    "title": "",
+    "name": "delete",
+    "group": "User",
+    "version": "1.0.0",
+    "filename": "app/controller/user.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "GET",
+    "url": "/user/getDetail/:id",
+    "title": "获取管理员详情",
+    "name": "getDetail",
+    "group": "User",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>用户ID</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/user.js",
+    "groupTitle": "User"
+  },
+  {
+    "type": "GET",
+    "url": "/user/getList",
+    "title": "获取管理员列表",
+    "name": "getList",
+    "group": "User",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "pageSize",
+            "description": "<p>一页多少条 默认10条</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "page",
+            "description": "<p>第几页</p>"
+          }
+        ]
+      }
+    },
+    "filename": "app/controller/user.js",
+    "groupTitle": "User"
   }
 ]

@@ -1,0 +1,22 @@
+{
+  "name": "node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "node": "index.js"
+  },
+  "scripts": {
+    "dev": "node bin/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wenlei0617/blog.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wenlei0617/blog/issues"
+  },
+  "homepage": "https://github.com/wenlei0617/blog#readme"
+}

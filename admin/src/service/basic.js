@@ -6,5 +6,8 @@ export const Basic = {
     },
     setWebConfig(data) {
         return http.post('/basics/setWebConfig', data)
+    },
+    getNavList() {
+        return http.get('/basics/getNavList')
     }
 }

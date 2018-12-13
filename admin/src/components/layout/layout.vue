@@ -1,6 +1,7 @@
 <template>
     <div class="layout">
         <header class="layout-header">
+            <!-- <el-button size="mini" type="info" class="layout-btn" @click="changeNav" circle icon="el-icon-arrow-right"></el-button> -->
             <!-- <img class="layout-header_logo" src="~@/assets/logo@2x.png" alt=""> -->
             <!-- <img class="layout-header_title" src="~@/assets/name-green.png" alt=""> -->
             <div class="layout-header_btns">
@@ -56,6 +57,7 @@ export default {
     },
     data() {
         return {
+            // isNav: true,
             transitionName: '',
             dialogVisible: false,
             form: {
@@ -65,6 +67,9 @@ export default {
         }
     },
     methods: {
+        // changeNav() {
+        //     this.isNav = !this.isNav;
+        // },
         loginOut() {
             this.$api.Login.loginOut().then(res => {
                 if(res) {
@@ -141,6 +146,11 @@ export default {
     width: 100%;
     height: 100%;
     overflow: hidden;
+    &-btn{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
     &-header{
         height: 80px;
         background: #fff;
@@ -191,7 +201,7 @@ export default {
         box-sizing: border-box;
     }
     &-left{
-        width: 200px;
+        width: 180px;
         box-sizing: border-box;
         z-index: 9;
     }

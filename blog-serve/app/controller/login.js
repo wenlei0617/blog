@@ -16,6 +16,7 @@ class LoginController extends Controller {
      */
     async loginIn() {
         const { ctx, app } = this;
+        const { Op } = app.Sequelize;
         const { account, password, id, code } = ctx.request.body;
         ctx.validate({
             account: {
@@ -64,6 +65,22 @@ class LoginController extends Controller {
                 }
             })
             user.token = token;
+            let role = user.role.split(',');
+            role = role.map(Number);
+            const rolesList = await app.model.NavFirst.findAll({
+                include: [
+                    {
+                        model: app.model.NavSecond,
+                        as: 'children',
+                        where: {
+                            id: {
+                                [Op.in]: role
+                            }
+                        }
+                    }
+                ]
+            });
+            user.role = rolesList;
             this.success(user);
             return;
         }

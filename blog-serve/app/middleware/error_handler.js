@@ -21,7 +21,7 @@ module.exports = () => {
             if(status === 422) {
                 ctx.body.data = err.errors;
             }
-            ctx.body.code = 500;
+            ctx.body.code = err.code || 500;
             ctx.status = status;
         }
     }

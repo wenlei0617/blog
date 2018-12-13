@@ -154,6 +154,14 @@ class BasicsController extends Controller {
 
         this.success();
     }
+
+    async getNavList() {
+        const { service } = this;
+
+        const roleList = await service.conf.getNav();
+
+        this.success(roleList);
+    }
 }
 
 module.exports = BasicsController;

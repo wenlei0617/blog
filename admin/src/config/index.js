@@ -13,6 +13,11 @@ export const NAVMENU = [
                 name: '文章列表',
                 path: '/article',
                 id: '2'
+            },
+            {
+                name: '轮播图管理',
+                path: '/banner',
+                id: '7'
             }
         ]
     },
@@ -30,6 +35,11 @@ export const NAVMENU = [
                 name: '网站配置',
                 path: '/webconfig',
                 id: '5'
+            },
+            {
+                name: '管理员管理',
+                path: '/user',
+                id: '6'
             }
         ]
     }

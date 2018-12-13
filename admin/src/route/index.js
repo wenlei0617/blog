@@ -36,6 +36,21 @@ const router = new Router({
 					path: 'webconfig',
 					component: () => import('@/views/webConfig/index.vue'),
 					name: 'webconfig'
+				},
+				{
+					path: 'user',
+					component: () => import('@/views/user/index.vue'),
+					name: 'user'
+				},
+				{
+					path: 'user/add/:id?',
+					component: () => import('@/views/user/add.vue'),
+					name: 'user-add'
+				},
+				{
+					path: 'banner',
+					component: () => import('@/views/banner/index.vue'),
+					name: 'banner'
 				}
 			]
 		},

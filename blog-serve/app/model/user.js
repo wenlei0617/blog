@@ -3,7 +3,7 @@
 const moment = require('moment');
 
 module.exports = app => {
-    const { STRING, DATE, INTEGER } = app.Sequelize;
+    const { STRING, DATE, INTEGER, Op } = app.Sequelize;
 
     const User = app.model.define('blog_users', {
         id: {
@@ -33,6 +33,9 @@ module.exports = app => {
                 notEmpty: false,
                 len: [ 6, 12 ]
             }
+        },
+        role: {
+            type: STRING(20)
         },
         token: {
             type: STRING,
