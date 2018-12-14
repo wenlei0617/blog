@@ -9,5 +9,8 @@ export const Basic = {
     },
     getNavList() {
         return http.get('/basics/getNavList')
+    },
+    getSelfNav() {
+        return http.get('/basics/getSelfNav')
     }
 }

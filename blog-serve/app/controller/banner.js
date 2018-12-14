@@ -17,7 +17,7 @@ class BannerController extends Controller {
         const { ctx, service } = this;
         const { pageSize = 10, page = 1 } = ctx.request.query;
 
-        const list = await service.banner.index(pageSize, page);
+        const list = await service.banner.index(parseInt(pageSize), parseInt(page));
 
         this.success(list)
     }

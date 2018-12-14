@@ -53,7 +53,8 @@ class LoginController extends Controller {
         if(user) {
             const token = jwt.sign({
                 id: user.id,
-                name: user.name
+                name: user.name,
+                role: user.role
             }, this.config.keys, {
                 expiresIn: '10h'
             });

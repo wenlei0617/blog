@@ -16,13 +16,12 @@ Vue.use(Element);
 Vue.component('WTable', Table);
 Vue.component('WBreadcrumb', Breadcrumb);
 Vue.prototype.$api = Api;
-// Vue.config.productionTip = false;
-// Vue.config.performance = true;
-// Vue.config.errorHandler = function() {
-	
-// }
 
 sync(store, router);
+
+if(store.state.navmenu.length === 0 && sessionStorage.getItem('authorization')) {
+	store.dispatch('getSelfNav');
+}
 
 
 new Vue({

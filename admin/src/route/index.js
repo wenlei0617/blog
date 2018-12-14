@@ -51,6 +51,11 @@ const router = new Router({
 					path: 'banner',
 					component: () => import('@/views/banner/index.vue'),
 					name: 'banner'
+				},
+				{
+					path: 'banner/add/:id?',
+					component: () => import('@/views/banner/add.vue'),
+					name: 'banner-add'
 				}
 			]
 		},

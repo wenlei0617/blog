@@ -13,6 +13,8 @@ class ArticleController extends Controller {
 	 * @apiParam  {String} pageSize 条数
 	 * @apiParam  {String} name 标题
 	 * @apiParam  {Date} time 日期  YYYY-MM-DD
+	 * @apiParam  {Int} type_id 类型ID
+	 * @apiParam  {Int} is_recommend 是否推荐
 	 */
 	async index() {
 		const { ctx, app } = this;

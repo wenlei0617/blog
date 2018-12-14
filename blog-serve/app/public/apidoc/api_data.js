@@ -369,6 +369,26 @@ define({ "api": [
   },
   {
     "type": "GET",
+    "url": "/basics/getNavList",
+    "title": "获取菜单配置",
+    "name": "getNavList",
+    "group": "Basics",
+    "version": "1.0.0",
+    "filename": "app/controller/basics.js",
+    "groupTitle": "Basics"
+  },
+  {
+    "type": "GET",
+    "url": "/basics/getSelfNav",
+    "title": "获取用户菜单",
+    "name": "getSelfNav",
+    "group": "Basics",
+    "version": "1.0.0",
+    "filename": "app/controller/basics.js",
+    "groupTitle": "Basics"
+  },
+  {
+    "type": "GET",
     "url": "/basics/getWebConfig",
     "title": "获取网站配置",
     "name": "getWebConfig",

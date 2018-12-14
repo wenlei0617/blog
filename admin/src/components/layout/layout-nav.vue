@@ -9,7 +9,7 @@
             <template v-for="item in $store.state.navmenu" >
                 <el-submenu 
                     v-if="item.children"
-                    :index="item.id" 
+                    :index="String(item.id)" 
                     :key="item.id">
                     <template slot="title">
                         <i :class="item.className"></i>
@@ -20,14 +20,14 @@
                             v-for="subItem in item.children"
                             :key="subItem.id"
                             :route="{path: subItem.path}" 
-                            :index="subItem.id">{{subItem.name}}</el-menu-item>
+                            :index="String(subItem.id)">{{subItem.name}}</el-menu-item>
                     </el-menu-item-group>
                 </el-submenu>
                 <el-menu-item
                     v-else
                     :key="item.id"
                     :route="{path: item.path}"
-                    :index="item.id">
+                    :index="String(item.id)">
                     <i class="iconfont" :class="item.className"></i>
                     <span slot="title">{{item.name}}</span>
                 </el-menu-item>
@@ -48,12 +48,12 @@ export default {
                 let active = '';
                 this.$store.state.navmenu.forEach(item => {
                     if(item.path && this.$route.path === item.path) {
-                        active = item.id;
+                        active = String(item.id);
                     }
                     if(!item.path) {
                         item.children.forEach(subItem => {
                             if(subItem.path === this.$route.path) {
-                                active = subItem.id;
+                                active = String(subItem.id);
                             }
                         })
                     }
@@ -72,6 +72,7 @@ export default {
     box-sizing: border-box;
     width: 100%;
     overflow: auto;
+    overflow-x: hidden;
     .el-menu-item-group__title{
         padding: 0 !important;
     }

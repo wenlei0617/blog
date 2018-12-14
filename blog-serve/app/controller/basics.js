@@ -154,11 +154,33 @@ class BasicsController extends Controller {
 
         this.success();
     }
-
+    /**
+     * 
+     * @api {GET} /basics/getNavList 获取菜单配置
+     * @apiName getNavList
+     * @apiGroup Basics
+     * @apiVersion  1.0.0
+     */
     async getNavList() {
         const { service } = this;
 
         const roleList = await service.conf.getNav();
+
+        this.success(roleList);
+    }
+    /**
+     * 
+     * @api {GET} /basics/getSelfNav 获取用户菜单
+     * @apiName getSelfNav
+     * @apiGroup Basics
+     * @apiVersion  1.0.0
+     * 
+     */
+    async getSelfNav() {
+        const { service } = this;
+        const userInfo = this.getUserInfo();
+        
+        const roleList = await service.conf.getNav(userInfo.role.split(','));
 
         this.success(roleList);
     }

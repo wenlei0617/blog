@@ -32,6 +32,7 @@ module.exports = app => {
   router.get('/basics/getWebConfig', app.middleware.jwt(), controller.basics.getWebConfig);
   router.post('/basics/setWebConfig', app.middleware.jwt(), controller.basics.setWebConfig);
   router.get('/basics/getNavList', app.middleware.jwt(), controller.basics.getNavList);
+  router.get('/basics/getSelfNav', app.middleware.jwt(), controller.basics.getSelfNav);
 
   // 后台登陆接口
   router.post('/login/loginIn', controller.login.loginIn);

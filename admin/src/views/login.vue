@@ -47,6 +47,7 @@ export default {
                     this.$api.Login.loginIn(this.data).then(res => {
                         if(res) {
                             sessionStorage.setItem('authorization', res.data.token);
+                            this.$store.commit('setNav', res.data.role);
                             this.$router.push('/');
                             return;
                         }
