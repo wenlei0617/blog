@@ -4,7 +4,7 @@
 
 # Site
 # 网站标题
-title: Hexo
+title: gary个人博客
 # 网站副标题
 subtitle: ''
 # 网站描述
@@ -12,7 +12,7 @@ description: ''
 # 网站关键词
 keywords:
 # 作者
-author: John Doe
+author: gary
 # 网站使用的语言
 language: en
 # 时区
@@ -21,7 +21,8 @@ timezone: 'Asia/Shanghai'
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
 # 网站网址
-url: http://example.com
+url: https://wenlei0617.github.io/blog/
+root: /blog/
 # 文章格式
 permalink: :year/:month/:day/:title/
 # 永久链接中各部分的默认值
