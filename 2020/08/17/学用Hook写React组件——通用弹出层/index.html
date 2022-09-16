@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="前端">
+    <meta name="author" content="Gary">
+    
+    <title>
+        
+            学用Hook写React组件——通用弹出层 |
+        
+        随记
+    </title>
+    
+<link rel="stylesheet" href="/blog/css/style.css">
+
+    <link rel="shortcut icon" href="/blog/images/logo.svg">
+    
+<link rel="stylesheet" href="/blog/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"wenlei0617.github.io","root":"/blog/","language":"zh-CN"};
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/blog/images/bg.svg","description":"心怀热爱，奔赴山海，看云卷云舒，望潮起潮落"},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                随记
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/archives">归档</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">学用Hook写React组件——通用弹出层</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/blog/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">Gary</span>
+                        
+                            <span class="author-label">Lv2</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2020-08-17 18:11:55</span>
+        <span class="mobile">2020-08-17 18:11</span>
+    </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><blockquote>
+<p>最近升级项目，发现项目有很多各式各样的弹框，但是并没有对其进行抽象通用，根据项目迭代时间不同，实现方式也不统一，有使用ReactDOM.createPortal，也有使用ReactDOM.render，还有早期使用appendChild。秉承后期的可维护性和减少相同代码目的，开始对所有弹框进行分析。以下记录实现过程</p>
+</blockquote>
+<h3 id="实现方案分析"><a href="#实现方案分析" class="headerlink" title="实现方案分析"></a>实现方案分析</h3><p>如上所述，主要的实现方式就createPortal、render、appendChild三种方式，appendChild无法直接监听销毁和创建过程，render的方式无法在内部读取到context，并且需要处理切换页面的销毁。最终选择createPortal的方式。</p>
+<p>先创建一个Hook函数</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">usePortal</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于函数，先不用处理内部实现，先定义入参和出参，找到可变和不可变内容。入参及可变的变量（弹出层可变的变量），出参及我们需要的变量。分析了各种花式弹框后，得出可变部分为：</p>
+<ol>
+<li>弹出层内容</li>
+<li>是否能通过蒙层关闭弹出层</li>
+<li>蒙层样式</li>
+<li>渲染位置</li>
+<li>是否默认显示</li>
+</ol>
+<p>转化为接口如下</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">interface <span class="title class_">ProtalOptions</span> &#123;</span><br><span class="line">    <span class="attr">children</span>: <span class="title class_">React</span>.<span class="property">ReactNode</span>,</span><br><span class="line">    closeOnOutSide?: boolean,</span><br><span class="line">    className?: string,</span><br><span class="line">    rootContainer?: <span class="title class_">HTMLElement</span>,</span><br><span class="line">    defaultShow?: boolean</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> <span class="title function_">useProtal</span> = (<span class="params">options: ProtalOptions = &#123;&#125;</span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; </span><br><span class="line">        closeOnOutSide,</span><br><span class="line">        className,</span><br><span class="line">        rootContainer,</span><br><span class="line">        defaultShow,</span><br><span class="line">        children</span><br><span class="line">    &#125; = options;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来需要对出参(函数返回值)进行分析，出参及使用函数者(场景下)需要的内容，根据自身业务场景进行分析。这里主要需要的内容是：</p>
+<ol>
+<li>创建弹出层</li>
+<li>弹出层状态</li>
+<li>弹出层关闭方法</li>
+<li>弹出层开启方法</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...略  同上</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">useProtal</span> = (<span class="params">options: ProtalOptions = &#123;&#125;</span>) =&gt; &#123;</span><br><span class="line">    <span class="comment">// 设定默认值</span></span><br><span class="line">    <span class="keyword">const</span> &#123; </span><br><span class="line">        closeOnOutSide = <span class="literal">true</span>,</span><br><span class="line">        className = <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">        rootContainer = <span class="variable language_">document</span>.<span class="property">body</span>,</span><br><span class="line">        defaultShow = <span class="literal">false</span>,</span><br><span class="line">        children</span><br><span class="line">    &#125; = options;</span><br><span class="line">    <span class="comment">// 定义状态变量，并设置默认值</span></span><br><span class="line">    <span class="keyword">const</span> [isShow, setShow] = <span class="title function_">useState</span>(defaultShow);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 创建弹出层</span></span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">Protal</span> = (<span class="params"></span>) =&gt; &#123;&#125;</span><br><span class="line">    <span class="comment">// 显示弹出层,很简单对setShow进行封装</span></span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">handleShow</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">        <span class="title function_">setShow</span>(<span class="literal">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 关闭弹出层</span></span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">handleClose</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">        <span class="title function_">setShow</span>(<span class="literal">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="title class_">Protal</span>,</span><br><span class="line">        isShow,</span><br><span class="line">        handleShow,</span><br><span class="line">        handleClose,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>大体的结构已经完成，现在只需要对每个函数进行具体的实现和对部分细节进行微调。前面讲到，我们需要通过createProtal进行创建弹出层，这里Protal函数即是对弹出层的UI实现（PS：这里个人对此有不同的见解，因为hook本身是抽离逻辑层，不应该牵扯到UI的实现，但这里需要使用Protal实现弹出层的最外层，是否应该把此抽离出来和hook组合使用。如果在hook里实现UI，如果处理了重复的渲染，而方便使用者，是否也可以不遵从上面的规则，个人在两种实现到现在也很纠结，恳请各路大神指点利弊），这里先采用了第二种实现，因为Protal为函数组件，这里把children属性移动到了Protal参数上，使用起来更为直观</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">interface <span class="title class_">ProtalOptions</span> &#123;</span><br><span class="line">    <span class="comment">// children: React.ReactNode, 删除此定义</span></span><br><span class="line">    closeOnOutSide?: boolean,</span><br><span class="line">    className?: string,</span><br><span class="line">    rootContainer?: <span class="title class_">HTMLElement</span>,</span><br><span class="line">    defaultShow?: boolean</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">useProtal</span> = (<span class="params">options: ProtalOptions = &#123;&#125;</span>) =&gt; &#123;</span><br><span class="line">    <span class="comment">// 设定默认值</span></span><br><span class="line">    <span class="keyword">const</span> &#123; </span><br><span class="line">        closeOnOutSide = <span class="literal">true</span>,</span><br><span class="line">        className = <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">        rootContainer = <span class="variable language_">document</span>.<span class="property">body</span>,</span><br><span class="line">        defaultShow = <span class="literal">false</span>,</span><br><span class="line">        <span class="comment">// children 删除此属性</span></span><br><span class="line">    &#125; = options;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ...略</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 创建弹出层，避免函数的重复渲染，使用了useCallback</span></span><br><span class="line">    <span class="keyword">const</span> <span class="title class_">Protal</span> = <span class="title function_">useCallback</span>(<span class="function">(<span class="params">&#123;children&#125;: &#123;children: React.ReactNode&#125;</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!isShow) <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> <span class="title class_">ReactDOM</span>.<span class="title function_">createProtal</span>(</span><br><span class="line">            <span class="comment">//这里定义了一个Wrap组件，作用是对蒙层的样式修改和对蒙层点击事件的控制</span></span><br><span class="line">            <span class="language-xml"><span class="tag">&lt;<span class="name">Wrap</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">                <span class="attr">onClick</span>=<span class="string">&#123;closeOnOutSide</span> ? <span class="attr">handleClose</span> <span class="attr">:</span> () =&gt;</span> &#123;&#125;&#125;</span></span><br><span class="line"><span class="language-xml">                className=&#123;className&#125;&gt;</span></span><br><span class="line"><span class="language-xml">                &#123;children&#125;</span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;/<span class="name">Wrap</span>&gt;</span></span>, rootContainer</span><br><span class="line">        )</span><br><span class="line">    &#125;, [isShow]); <span class="comment">// 这里对closeOnOutSide, rootContainer没有进行依赖，是希望这个两个值不能动态修改，减少不必要的渲染问题</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ...略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Wrap组件的作用组要是对蒙层样式的定义和蒙层本身点击事件的控制与否，判断是否点击蒙层通过contains方法进行判断，具体实现如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">interface <span class="title class_">WrapProps</span> &#123;</span><br><span class="line">    <span class="attr">onClick</span>: <span class="function">() =&gt;</span> <span class="keyword">void</span>,</span><br><span class="line">    className?: string</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 判断当前点击是否为蒙层</span></span><br><span class="line"><span class="keyword">const</span> includeTarget = (<span class="attr">target</span>:<span class="title class_">HTMLElement</span>, <span class="attr">content</span>: <span class="title class_">HTMLElement</span>):<span class="function"><span class="params">boolean</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> target.<span class="title function_">contains</span>(content);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">Wrap</span>:<span class="title class_">React</span>.<span class="property">FC</span>&lt;<span class="title class_">WrapProps</span>&gt; = <span class="function">(<span class="params">&#123;children, onClick, className = <span class="string">&#x27;&#x27;</span>&#125;</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> handleClick = <span class="title function_">useCallback</span>(<span class="function">(<span class="params">e: React.MouseEvent</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> childNodes = (e.<span class="property">currentTarget</span> <span class="keyword">as</span> <span class="title class_">HTMLElement</span>).<span class="property">childNodes</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; childNodes.<span class="property">length</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!<span class="title function_">includeTarget</span>(childNodes[i] <span class="keyword">as</span> <span class="title class_">HTMLElement</span>, e.<span class="property">target</span> <span class="keyword">as</span> <span class="title class_">HTMLElement</span>)) &#123;</span><br><span class="line">                onClick &amp;&amp; <span class="title function_">onClick</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, []);</span><br><span class="line">    <span class="comment">// styles.modal为默认样式，</span></span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">onClick</span>=<span class="string">&#123;handleClick&#125;</span> <span class="attr">className</span>=<span class="string">&#123;</span>`$&#123;<span class="attr">styles.modal</span>&#125; $&#123;<span class="attr">className</span>&#125;`&#125;&gt;</span></span></span><br><span class="line"><span class="language-xml">            &#123;children&#125;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里没有进行弹框动画封装，是因为本身页面每个弹框动画方式都会不同，封装动画会减少本身的扩展性。至于动画的实现可根据自己实际情况进行实现。</p>
+<p>最终使用的方式，这里使用了react-spring库来实现动画的展示：</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://github.com/wenlei0617/react-use-portal.git" >源码地址<i class="fas fa-external-link-alt"></i></a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">React</span> <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> useProtal <span class="keyword">from</span> <span class="string">&#x27;@wenlei/react-use-portal&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;react-use-portal/dist/index.css&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; animated, useSpring &#125; <span class="keyword">from</span> <span class="string">&#x27;react-spring&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">App</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; <span class="title class_">Protal</span>, handleClose, handleShow, isShow &#125; = <span class="title function_">useProtal</span>();</span><br><span class="line">    <span class="keyword">const</span> animation = <span class="title function_">useSpring</span>(&#123;</span><br><span class="line">        <span class="attr">reverse</span>: !isShow,</span><br><span class="line">        <span class="attr">to</span>: &#123; <span class="attr">opacity</span>: <span class="number">1</span> &#125;,</span><br><span class="line">        <span class="attr">from</span>: &#123; <span class="attr">opacity</span>: <span class="number">0</span> &#125;,</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="language-xml"><span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;<span class="name">div</span>&gt;</span>状态：&#123;JSON.stringify(isShow)&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;handleShow&#125;</span>&gt;</span>弹出<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;<span class="name">Protal</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">                <span class="tag">&lt;<span class="name">animated.div</span> <span class="attr">style</span>=<span class="string">&#123;animation&#125;</span> <span class="attr">className</span>=<span class="string">&quot;popup&quot;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">                    <span class="tag">&lt;<span class="name">div</span>&gt;</span>这是一个简单的弹框<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">                    <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;handleClose&#125;</span>&gt;</span>关闭<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">                <span class="tag">&lt;/<span class="name">animated.div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;/<span class="name">Protal</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">    )    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d5de937836cc49eea300dd207a20337c~tplv-k3u1fbpfcp-zoom-1.image"></p>
+
+        </div>
+
+        
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/blog/2021/02/14/%E9%80%90%E6%AD%A5%E6%8B%86%E8%A7%A3React%E7%BB%84%E4%BB%B6%E2%80%94Swipe%E8%BD%AE%E6%92%AD%E5%9B%BE/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">逐步拆解React组件—Swipe轮播图</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/blog/2019/12/02/%E5%AD%A6%E7%94%A8Hooks%E5%86%99React%E7%BB%84%E4%BB%B6%E2%80%94%E2%80%94%E5%9F%BA%E7%A1%80%E7%89%88%E7%A7%BB%E5%8A%A8%E7%AB%AF%E6%97%A0%E7%BC%9D%E8%BD%AE%E6%92%AD%E5%9B%BE%E7%BB%84%E4%BB%B6/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">学用Hooks写React组件——基础版移动端无缝轮播图组件</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">Gary</a>
+        </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/blog/js/utils.js"></script>
+
+<script src="/blog/js/main.js"></script>
+
+<script src="/blog/js/header-shrink.js"></script>
+
+<script src="/blog/js/back2top.js"></script>
+
+<script src="/blog/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>

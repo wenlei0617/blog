@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="前端">
+    <meta name="author" content="Gary">
+    
+    <title>
+        
+            对于防止按钮重复点击的尝试 |
+        
+        随记
+    </title>
+    
+<link rel="stylesheet" href="/blog/css/style.css">
+
+    <link rel="shortcut icon" href="/blog/images/logo.svg">
+    
+<link rel="stylesheet" href="/blog/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"wenlei0617.github.io","root":"/blog/","language":"zh-CN"};
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/blog/images/bg.svg","description":"心怀热爱，奔赴山海，看云卷云舒，望潮起潮落"},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                随记
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/archives">归档</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">对于防止按钮重复点击的尝试</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/blog/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">Gary</span>
+                        
+                            <span class="author-label">Lv2</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2019-04-20 18:13:59</span>
+        <span class="mobile">2019-04-20 18:13</span>
+    </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <blockquote>
+<p>导语：随着接触的项目增加，很多项目都是遇到同样的问题，而每次都是使用一贯的手法进行处理。有时候有些方法并不是那么的优雅甚至有些冗余，所以自己也想开始尝试不同的方法去解决同样的问题。</p>
+</blockquote>
+<p>我经常在项目中会遇到按钮重复点击后引起表单的重复点击问题。所以针对这个问题，自己尝试了几种办法分别去解决。直接上代码。</p>
+<h2 id="1-粗暴简单办法"><a href="#1-粗暴简单办法" class="headerlink" title="1.粗暴简单办法"></a>1.粗暴简单办法</h2><p>直接定义一个变量，每次点击过后等所有操作结束后释放变量。或使用loading防止用户点击</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//* 部分代码</span></span><br><span class="line">&lt;script&gt;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">    <span class="attr">methods</span>: &#123;</span><br><span class="line">        <span class="title function_">onSubmit</span>(<span class="params"></span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="variable language_">this</span>.<span class="property">lock</span>) <span class="keyword">return</span>;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">lock</span> = <span class="literal">true</span>;</span><br><span class="line">            <span class="comment">// const load = this.$loading();</span></span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">$http</span>.<span class="title function_">create</span>().<span class="title function_">then</span>(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">                <span class="comment">// do something</span></span><br><span class="line">                <span class="variable language_">this</span>.<span class="property">lock</span> = <span class="literal">false</span>;</span><br><span class="line">                <span class="comment">// load.close();</span></span><br><span class="line">            &#125;).<span class="title function_">catch</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">                <span class="variable language_">this</span>.<span class="property">lock</span> = <span class="literal">false</span>;</span><br><span class="line">                <span class="comment">// load.close();</span></span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;, </span><br><span class="line">    &#125;,</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>这种办法简单粗暴，但是每次需要防止重复点击的地方,都要去关注lock或者loading的重置，总觉的很啰嗦。也没办法好好的抽离出来。（PS:能力有限，自己也没有想到比较好的办法在上层优雅的封装出来）</p>
+<h2 id="2-直接把loading放到http请求中去做，统一封装方法"><a href="#2-直接把loading放到http请求中去做，统一封装方法" class="headerlink" title="2.直接把loading放到http请求中去做，统一封装方法"></a>2.直接把loading放到http请求中去做，统一封装方法</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//* 部分代码</span></span><br><span class="line">...</span><br><span class="line"><span class="keyword">let</span> load;</span><br><span class="line">http.<span class="property">interceptors</span>.<span class="property">request</span>.<span class="title function_">use</span>(<span class="function">(<span class="params">config</span>) =&gt;</span> &#123;</span><br><span class="line">    load = <span class="title class_">Loading</span>();</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> config;</span><br><span class="line">&#125;, <span class="function"><span class="params">error</span> =&gt;</span> &#123;</span><br><span class="line">    load.<span class="title function_">close</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">Promise</span>.<span class="title function_">reject</span>(error)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">http.<span class="property">interceptors</span>.<span class="property">response</span>.<span class="title function_">use</span>(<span class="function">(<span class="params">response</span>) =&gt;</span> &#123;</span><br><span class="line">    load.<span class="title function_">close</span>();</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> response; </span><br><span class="line">&#125;,<span class="function"><span class="params">error</span> =&gt;</span> &#123;</span><br><span class="line">    load.<span class="title function_">close</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">Promise</span>.<span class="title function_">reject</span>(error);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>这种办法在实际中也用过了一段时间，一开始挺好用的，但是在后面自己弱网测试的时候发现也是会导致重复点击的情况。而且在有些时候loading图并不是所有请求都需要，还要去做个是否显示loading的配置，这样感觉http请求又笨重了，也没有让重复点击功能抽离出来。</p>
+<h2 id="3-装饰器方法"><a href="#3-装饰器方法" class="headerlink" title="3.装饰器方法"></a>3.装饰器方法</h2><p>说到装饰器，最经典的应用场景就是面向切片编程（AOP），《前端常用设计模式(1)–装饰器(decorator)》<a class="link"   target="_blank" rel="noopener" href="https://juejin.im/post/1" >https://juejin.im/post/1<i class="fas fa-external-link-alt"></i></a> 做出了很棒的理解与应用。得益于ES7和TS，装饰器在Angular和react中都有很多案例，因为Vue中Class不是必选，所以在Vue中很少看到使用装饰器的，得益于官方有vue-class-component来使用Class进行创建组件的方法，开始了自己的尝试之路。</p>
+<p>lock.js</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">lock</span>(<span class="params">target, key, desc</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> fn = desc.<span class="property">value</span>;</span><br><span class="line">    <span class="comment">//* 没有使用箭头函数是为了让this能指回到vue，这样就可以获取到vue的data，从而做更多的事情，下面会讲到</span></span><br><span class="line">    desc.<span class="property">value</span> = <span class="keyword">async</span> <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="variable language_">this</span>.<span class="property">$lock</span>) <span class="keyword">return</span>;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">$lock</span> = <span class="literal">true</span>;</span><br><span class="line">        <span class="comment">/** </span></span><br><span class="line"><span class="comment">        * await fn.apply(this).catch(() =&gt; &#123;</span></span><br><span class="line"><span class="comment">        *    this.$lock = false;</span></span><br><span class="line"><span class="comment">        * &#125;);</span></span><br><span class="line"><span class="comment">        * this.$lock = false;</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        <span class="keyword">await</span> fn.<span class="title function_">apply</span>(<span class="variable language_">this</span>).<span class="title function_">finally</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">$lock</span> = <span class="literal">false</span>;</span><br><span class="line">        &#125;)</span><br><span class="line">        <span class="keyword">return</span> target;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>index.vue</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;!-- <span class="keyword">do</span> something --&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"><span class="keyword">import</span> <span class="title class_">Vue</span> <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span>;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"><span class="keyword">import</span> <span class="title class_">Component</span> <span class="keyword">from</span> <span class="string">&#x27;vue-class-component&#x27;</span>;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"><span class="keyword">import</span> &#123; lock &#125; <span class="keyword">from</span> <span class="string">&#x27;./lock&#x27;</span>;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">@<span class="title class_">Component</span></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> <span class="title class_">extends</span> <span class="title class_">Vue</span> &#123;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    @lock</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    <span class="keyword">async</span> <span class="title function_">onSubmit</span>(<span class="params"></span>) &#123;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="keyword">await</span> <span class="variable language_">this</span>.<span class="property">$http</span>.<span class="title function_">create</span>();</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="comment">// do something</span></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    &#125;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">&#125;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p>感觉这样就完全抽离了重复点击的功能（PS：好像是这样的），也能独立测试，想在哪里用就在哪里用。感觉不足的是，装饰器里需要让this重新指回vue才能获取到vue的data</p>
+<h2 id="4-举一反三"><a href="#4-举一反三" class="headerlink" title="4.举一反三"></a>4.举一反三</h2><p>既然重复点击可以从业务代码中抽离出来，那我们提交表单的字段验证也就同样可以抽离出来了。（PS：所有UI框架都有成熟的form表单验证组件，就当我是瞎折腾）</p>
+<p>validate.js</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">validate</span>(<span class="params">target, key, desc</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> fn = desc.<span class="property">value</span>;</span><br><span class="line"></span><br><span class="line">  desc.<span class="property">value</span> = <span class="keyword">async</span> <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123;</span><br><span class="line">      name, phone,</span><br><span class="line">    &#125; = <span class="variable language_">this</span>.<span class="property">data</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (!name) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="title function_">confirm</span>(<span class="string">&#x27;请输入您的姓名&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (name.<span class="property">length</span> &gt; <span class="number">20</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="title function_">confirm</span>(<span class="string">&#x27;您的姓名不能超过20个字&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!phone) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="title function_">confirm</span>(<span class="string">&#x27;请输入您的电话&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!((<span class="regexp">/^\d&#123;11&#125;$/</span>.<span class="title function_">test</span>(phone)))) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="title function_">confirm</span>(<span class="string">&#x27;请输入11位的电话号码&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">await</span> fn.<span class="title function_">apply</span>(<span class="variable language_">this</span>);</span><br><span class="line">    <span class="keyword">return</span> target;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>index.vue</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;!-- <span class="keyword">do</span> something --&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"><span class="keyword">import</span> <span class="title class_">Vue</span> <span class="keyword">from</span> <span class="string">&#x27;vue&#x27;</span>;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"><span class="keyword">import</span> <span class="title class_">Component</span> <span class="keyword">from</span> <span class="string">&#x27;vue-class-component&#x27;</span>;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"><span class="keyword">import</span> &#123; validate &#125; <span class="keyword">from</span> <span class="string">&#x27;./validate&#x27;</span>;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">@<span class="title class_">Component</span></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> <span class="title class_">extends</span> <span class="title class_">Vue</span> &#123;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    data = &#123;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="attr">name</span>: <span class="string">&#x27;&#x27;</span>,</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="attr">phone</span>: <span class="string">&#x27;&#x27;</span>,</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    &#125;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    </span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    @validate</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    <span class="keyword">async</span> <span class="title function_">onSubmit</span>(<span class="params"></span>) &#123;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="keyword">await</span> <span class="variable language_">this</span>.<span class="property">$http</span>.<span class="title function_">create</span>();</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="comment">// do something</span></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    &#125;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">&#125;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="5-防抖方法（补充）"><a href="#5-防抖方法（补充）" class="headerlink" title="5.防抖方法（补充）"></a>5.防抖方法（补充）</h2><p>有小伙伴说可以使用防抖，个人觉得还是需要看场景，这里也就列出防抖的方法。</p>
+<p>防抖方法是一个很好限制重复事件频繁触发的，经常用在scroll、resize事件上，也可以尝试用在重复点击上面。但是如果点击事件后需要有异步处理，单单使用防抖方法也会没办法限制弱网（PS：吐槽一下成都地铁上移动经常网络不好）下重复点击的情况。如：防抖时间为1秒，但是请求花掉了2秒才返回数据给前端进行处理，中间产生了时间差，导致用户有时间重复点击。所以个人觉得还是需要配合其它办法。同样列出防抖的列子：</p>
+<p>throttle.js</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> throttle = <span class="keyword">function</span>(<span class="params">fn, wait, scope</span>) &#123;</span><br><span class="line">    <span class="built_in">clearTimeout</span>(throttle.<span class="property">timer</span>);</span><br><span class="line">    throttle.<span class="property">timer</span> = <span class="built_in">setTimeout</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">        fn.<span class="title function_">apply</span>(scope);</span><br><span class="line">    &#125;, wait);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>index.vue</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;!-- <span class="keyword">do</span> something --&gt;    </span><br><span class="line">&lt;/template&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    <span class="title function_">onSubmit</span>(<span class="params"></span>) &#123;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        <span class="title function_">throttle</span>(<span class="function">() =&gt;</span> &#123;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">            <span class="variable language_">this</span>.<span class="property">$http</span>.<span class="title function_">create</span>().<span class="title function_">then</span>(<span class="function">(<span class="params">result</span>) =&gt;</span> &#123;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">                <span class="comment">// do something</span></span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">            &#125;);</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">        &#125;, <span class="number">1000</span>);</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">    &#125;,</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml">&#125;;</span></span></span><br><span class="line"><span class="language-javascript"><span class="language-xml"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<h2 id="小结："><a href="#小结：" class="headerlink" title="小结："></a>小结：</h2><p>本文主要是让自己，通过某个功能对自己代码进行review和重实现来提高代码质量，希望各位大佬多多指点。下面是我的微信号，希望和大家多多交流学习。（添加微信请注明来意谢谢！）</p>
+<p><img src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2019/4/20/16a366d238567652~tplv-t2oaga2asx-image.image"></p>
+
+        </div>
+
+        
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/blog/2019/08/20/%E5%AD%A6%E7%94%A8Hooks%E5%86%99React%E7%BB%84%E4%BB%B6%E2%80%94%E2%80%94%E5%9F%BA%E7%A1%80%E7%89%88Select%E7%BB%84%E4%BB%B6/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">学用Hooks写React组件——基础版Select组件</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">Gary</a>
+        </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/blog/js/utils.js"></script>
+
+<script src="/blog/js/main.js"></script>
+
+<script src="/blog/js/header-shrink.js"></script>
+
+<script src="/blog/js/back2top.js"></script>
+
+<script src="/blog/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>

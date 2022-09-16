@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="前端">
+    <meta name="author" content="Gary">
+    
+    <title>
+        
+            洋葱模型—从理解到实践 |
+        
+        随记
+    </title>
+    
+<link rel="stylesheet" href="/blog/css/style.css">
+
+    <link rel="shortcut icon" href="/blog/images/logo.svg">
+    
+<link rel="stylesheet" href="/blog/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"wenlei0617.github.io","root":"/blog/","language":"zh-CN"};
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/blog/images/bg.svg","description":"心怀热爱，奔赴山海，看云卷云舒，望潮起潮落"},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                随记
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/archives">归档</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">洋葱模型—从理解到实践</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/blog/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">Gary</span>
+                        
+                            <span class="author-label">Lv2</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-09-01 18:19:14</span>
+        <span class="mobile">2022-09-01 18:19</span>
+    </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <blockquote>
+<p>本文主要针对项目中遇到的问题，引申到koa-compose原理解析。通过学习洋葱模式来解决我们实际项目中的问题</p>
+</blockquote>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>先来听听一个故事吧，今天产品提了一个业务需求：用户在一个编辑页面，此时用户点击退出登录，应用需要提示用户当前有编辑内容未保存，是否保存；当用户操作完毕后再提示用户是否退出登录。</p>
+<p>流程如下：</p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3782ff90db7648858bda5c8a0792fcc6~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<p>因为退出登录是属于公共部分由另一位同学维护，此时和他交流后“善良”的把需求仍给了他。并告知他可以通过某某方法获取我当前是否有编辑内容。然后我继续摸鱼，他开始疯狂输出</p>
+<figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">handlerLogout</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable language_">window</span>.<span class="property">location</span>.<span class="property">href</span> === <span class="string">&#x27;xxx&#x27;</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_">getEditState</span>() === <span class="string">&#x27;xxx&#x27;</span>) &#123;</span><br><span class="line">            <span class="keyword">await</span> <span class="title function_">editConfirm</span>()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">logoutConfirm</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>功能如约上线，新需求也如约到达：产品期望用户在VIP充值页面退出登录的时候，先弹出一个VIP充值广告，当用户关闭广告后再提示用户是否退出登录。</p>
+<p>流程如下：</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/f48dd450bb284c4e9a669cf700ad0652~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<p>然后熟悉的场景、熟悉的人，在一番交流过后，那位同学略微暴躁的又开始疯狂输出，然后我继续摸鱼</p>
+<figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">const</span> pages = &#123;</span><br><span class="line">    <span class="attr">editPage</span>: <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_">getEditState</span>() === <span class="string">&#x27;xxx&#x27;</span>) &#123;</span><br><span class="line">            <span class="keyword">await</span> <span class="title function_">editConfirm</span>()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">vipPage</span>: <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_">getUserVipState</span>() === <span class="string">&#x27;xxx&#x27;</span>) &#123;</span><br><span class="line">            <span class="keyword">await</span> <span class="title function_">vipConfirm</span>()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">handlerLogout</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> curPage = <span class="title function_">getPage</span>();</span><br><span class="line">    <span class="keyword">await</span> pages[curPage];</span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">logoutConfirm</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后的然后功能又如约上线，然后需求又来了，一个场景中有多个弹窗业务，优先级不同，如果弹窗1不满足弹出条件，就使用弹窗2依此类推。众所周知产品的需求怎么做的完，他终于受不了了，开始思考怎么样自己才能摸摸鱼。与似乎邪恶的想法油然而生，如果自己维护的退出登录就只关注处理退出登录的业务，而其他业务的各种弹窗让业务方自己去处理那我就可以摸鱼啦。想法有了，拆解一下逻辑，底层逻辑就是在触发时需要有很多中间层的处理，等中间层处理完成后再处理自己的。那这不就像是洋葱模型吗。</p>
+<h2 id="洋葱模型"><a href="#洋葱模型" class="headerlink" title="洋葱模型"></a>洋葱模型</h2><p>提到洋葱模型，koa的实现简单且优雅。koa中主要使用<a class="link"   target="_blank" rel="noopener" href="https://github.com/koajs/compose" >koa-compose<i class="fas fa-external-link-alt"></i></a>来实现该模式。核心内容只有十几行，但是却涉及到高阶函数、闭包、递归、尾调用优化等知识，不得不说非常惊艳没有一行是多余的。简单来说，koa-compose暴露出一个compose方法，该方法接受一个中间件数组，并返回一个Promise函数。源码如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">compose</span> (middleware) &#123;</span><br><span class="line">  <span class="keyword">if</span> (!<span class="title class_">Array</span>.<span class="title function_">isArray</span>(middleware)) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">TypeError</span>(<span class="string">&#x27;Middleware stack must be an array!&#x27;</span>)</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> fn <span class="keyword">of</span> middleware) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> fn !== <span class="string">&#x27;function&#x27;</span>) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">TypeError</span>(<span class="string">&#x27;Middleware must be composed of functions!&#x27;</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> &#123;<span class="type">Object</span>&#125; <span class="variable">context</span></span></span><br><span class="line"><span class="comment">   * <span class="doctag">@return</span> &#123;<span class="type">Promise</span>&#125;</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@api</span> <span class="variable">public</span></span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">function</span> (<span class="params">context, next</span>) &#123;</span><br><span class="line">    <span class="comment">// last called middleware #</span></span><br><span class="line">    <span class="keyword">let</span> index = -<span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">dispatch</span>(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">dispatch</span> (i) &#123;</span><br><span class="line">      <span class="keyword">if</span> (i &lt;= index) <span class="keyword">return</span> <span class="title class_">Promise</span>.<span class="title function_">reject</span>(<span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&#x27;next() called multiple times&#x27;</span>))</span><br><span class="line">      index = i</span><br><span class="line">      <span class="keyword">let</span> fn = middleware[i]</span><br><span class="line">      <span class="keyword">if</span> (i === middleware.<span class="property">length</span>) fn = next</span><br><span class="line">      <span class="keyword">if</span> (!fn) <span class="keyword">return</span> <span class="title class_">Promise</span>.<span class="title function_">resolve</span>()</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title class_">Promise</span>.<span class="title function_">resolve</span>(<span class="title function_">fn</span>(context, dispatch.<span class="title function_">bind</span>(<span class="literal">null</span>, i + <span class="number">1</span>)))</span><br><span class="line">      &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title class_">Promise</span>.<span class="title function_">reject</span>(err)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>源码中compose主要做了三件事</p>
+<p><strong>第一步：进行入参校验</strong></p>
+<p><strong>第二步：返回一个函数，并利用闭包保存middleware和index的值</strong></p>
+<p><strong>第三步：调用时，执行dispatch(0)，默认从第一个中间件执行</strong></p>
+<p>dispatch函数的作用（dispatch其实就是next函数）</p>
+<p><strong>第一步：通过<code>i &lt;= index</code>来避免在同一个中间件中连续next调用</strong></p>
+<p><strong>第二步：设置index的值为当前中间件位置的值，并且拿到当前中间件函数</strong></p>
+<p><strong>第三步：判断当前是否还有中间件，没有返回<code>Promise.resolve()</code></strong></p>
+<p><strong>第四步：返回<code>Promise.resolve</code>并把当前中间件执行结果做为返回，且传入context和next(dispatch)方法。这里利用尾调优化，避免了fn重新创建新的栈帧，同时提升了速度和节省了内存（大佬就是大佬）</strong></p>
+<p>我们可以通过其测试用例了解到执行的过程，有条件的读者可以通过下载源码进行断点调试，更能理解每一步的过程</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">it</span>(<span class="string">&#x27;should work&#x27;</span>, <span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> arr = []</span><br><span class="line">  <span class="keyword">const</span> stack = []</span><br><span class="line"></span><br><span class="line">  stack.<span class="title function_">push</span>(<span class="keyword">async</span> (context, next) =&gt; &#123;</span><br><span class="line">    arr.<span class="title function_">push</span>(<span class="number">1</span>) <span class="comment">// 步骤1</span></span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">wait</span>(<span class="number">1</span>) <span class="comment">// 步骤2</span></span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">next</span>() <span class="comment">//  步骤3</span></span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">wait</span>(<span class="number">1</span>) <span class="comment">// 步骤14</span></span><br><span class="line">    arr.<span class="title function_">push</span>(<span class="number">6</span>) <span class="comment">// 步骤15</span></span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  stack.<span class="title function_">push</span>(<span class="keyword">async</span> (context, next) =&gt; &#123;</span><br><span class="line">    arr.<span class="title function_">push</span>(<span class="number">2</span>) <span class="comment">// 步骤4</span></span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">wait</span>(<span class="number">1</span>) <span class="comment">// 步骤5</span></span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">next</span>() <span class="comment">// 步骤6</span></span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">wait</span>(<span class="number">1</span>) <span class="comment">// 步骤12</span></span><br><span class="line">    arr.<span class="title function_">push</span>(<span class="number">5</span>) <span class="comment">// 步骤13</span></span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  stack.<span class="title function_">push</span>(<span class="keyword">async</span> (context, next) =&gt; &#123;</span><br><span class="line">    arr.<span class="title function_">push</span>(<span class="number">3</span>) <span class="comment">// 步骤7</span></span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">wait</span>(<span class="number">1</span>) <span class="comment">// 步骤8</span></span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">next</span>() <span class="comment">// 步骤9</span></span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">wait</span>(<span class="number">1</span>) <span class="comment">// 步骤10</span></span><br><span class="line">    arr.<span class="title function_">push</span>(<span class="number">4</span>) <span class="comment">// 步骤11</span></span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">await</span> <span class="title function_">compose</span>(stack)(&#123;&#125;)</span><br><span class="line">  <span class="title function_">expect</span>(arr).<span class="title function_">toEqual</span>(expect.<span class="title function_">arrayContaining</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]))</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>compose接收一个参数，该参数是一个Promise数组，注入中间件后返回了一个执行函数并执行。此时会按照上诉我标记的步骤进行执行。配置koa文档中的gif示例和流程图更好理解。通过不断的递归加上Promise链式调用完成了整个中间件的执行</p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ad46ecbd4f1f496fb2a826b1e7852a82~tplv-k3u1fbpfcp-watermark.image" alt="middleware.gif"></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/300c7d775a2e419aa0ab1ae3a4bc3912~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p>已经了解到洋葱模型的设计，按照当前摸鱼的诉求，期望stack.push这部分内容由业务方自己去注入，而退出登录只需要执行compose(stack)({})即可，额外诉求是项目中期望对弹窗有优先级的处理，那就是不是谁先进入谁先执行。对此改造一下middleware定义，新增level表示优先级后续它进行排序，优先级越高设置level值越高即可。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">Middleware</span>&lt;T = <span class="built_in">unknown</span>&gt; = &#123;</span><br><span class="line">  <span class="attr">level</span>: <span class="built_in">number</span>;</span><br><span class="line">  <span class="attr">middleware</span>: <span class="function">(<span class="params">context: T | <span class="literal">undefined</span>, next: () =&gt; <span class="built_in">Promise</span>&lt;<span class="built_in">any</span>&gt;</span>) =&gt;</span> <span class="built_in">void</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>因为我们需要提供给业务方一个接口来添加中间件，这里使用类来实现，通过暴露出add和remove方法对中间件进行添加和删除，利用add方法在添加时利用level对中间件进行排序，使用stack来保存已经排序好的中间件。dispatch通过CV大法实现</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Scheduler</span>&lt;T&gt; &#123;</span><br><span class="line">  <span class="attr">stack</span>: <span class="title class_">Middleware</span>&lt;T&gt;[] = [];</span><br><span class="line"></span><br><span class="line">  <span class="title function_">add</span>(<span class="params">middleware: Middleware&lt;T&gt;</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> index = <span class="variable language_">this</span>.<span class="property">stack</span>.<span class="title function_">findIndex</span>(<span class="function">(<span class="params">it</span>) =&gt;</span> it.<span class="property">level</span> &lt;= middleware.<span class="property">level</span>);</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">stack</span>.<span class="title function_">splice</span>(index === -<span class="number">1</span> ? <span class="variable language_">this</span>.<span class="property">stack</span>.<span class="property">length</span> : index, <span class="number">0</span>, middleware);</span><br><span class="line">    <span class="keyword">return</span> <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="variable language_">this</span>.<span class="title function_">remove</span>(middleware);</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">remove</span>(<span class="params">middleware: Middleware&lt;T&gt;</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> index = <span class="variable language_">this</span>.<span class="property">stack</span>.<span class="title function_">findIndex</span>(<span class="function">(<span class="params">it</span>) =&gt;</span> it === middleware);</span><br><span class="line">    index &gt; -<span class="number">1</span> &amp;&amp; <span class="variable language_">this</span>.<span class="property">stack</span>.<span class="title function_">splice</span>(index, <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="title function_">dispatch</span>(<span class="params">context?: T</span>) &#123;</span><br><span class="line">    <span class="comment">// eslint-disable-next-line</span></span><br><span class="line">    <span class="keyword">const</span> that = <span class="variable language_">this</span>;</span><br><span class="line">    <span class="keyword">let</span> index = -<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">mutate</span>(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">mutate</span>(<span class="params">i: <span class="built_in">number</span></span>): <span class="title class_">Promise</span>&lt;<span class="built_in">void</span>&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (i &lt;= index) <span class="keyword">return</span> <span class="title class_">Promise</span>.<span class="title function_">reject</span>(<span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&#x27;next() called multiple times&#x27;</span>));</span><br><span class="line">      index = i;</span><br><span class="line">      <span class="keyword">const</span> fn = that.<span class="property">stack</span>[i];</span><br><span class="line">      <span class="keyword">if</span> (index === that.<span class="property">stack</span>.<span class="property">length</span>) <span class="keyword">return</span> <span class="title class_">Promise</span>.<span class="title function_">resolve</span>();</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title class_">Promise</span>.<span class="title function_">resolve</span>(fn.<span class="title function_">middleware</span>(context, mutate.<span class="title function_">bind</span>(<span class="literal">null</span>, i + <span class="number">1</span>)));</span><br><span class="line">      &#125; <span class="keyword">catch</span> (error) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title class_">Promise</span>.<span class="title function_">reject</span>(error);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title class_">Scheduler</span>;</span><br></pre></td></tr></table></figure>
+
+<p>然后修改业务中的处理，之后再加类似需求就可以摸鱼了。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 暴露一个logoutScheduler方法</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> logoutScheduler = <span class="keyword">new</span> <span class="title class_">Scheduler</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">handleLogout</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    logoutScheduler.<span class="title function_">dispatch</span>().<span class="title function_">then</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="title function_">logoutConfirm</span>();</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 编辑页面</span></span><br><span class="line">logoutScheduler.<span class="title function_">add</span>(&#123;</span><br><span class="line">    <span class="attr">level</span>: <span class="number">2</span>,</span><br><span class="line">    <span class="attr">middleware</span>: <span class="keyword">async</span> (_, next) =&gt; &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_">getEditState</span>() === <span class="string">&#x27;xxx&#x27;</span>) &#123;</span><br><span class="line">          <span class="keyword">await</span> <span class="title function_">editConfirm</span>()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">await</span> <span class="title function_">next</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// vip页面</span></span><br><span class="line">logoutScheduler.<span class="title function_">add</span>(&#123;</span><br><span class="line">    <span class="attr">level</span>: <span class="number">2</span>,</span><br><span class="line">    <span class="attr">middleware</span>: <span class="keyword">async</span> (_, next) =&gt; &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_">getUserVipState</span>() === <span class="string">&#x27;xxx&#x27;</span>) &#123;</span><br><span class="line">            <span class="keyword">await</span> <span class="title function_">vipConfirm</span>()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">await</span> <span class="title function_">next</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>一个好的设计能在实际开发中更好的去解耦业务，而好的设计需要我们去阅读那些优秀的源码去学习和理解才能为我们所用。</p>
+
+        </div>
+
+        
+
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/blog/2022/08/09/Jest%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E4%B9%8B%E6%97%85%E2%80%94%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Jest单元测试之旅—实践总结</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">Gary</a>
+        </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/blog/js/utils.js"></script>
+
+<script src="/blog/js/main.js"></script>
+
+<script src="/blog/js/header-shrink.js"></script>
+
+<script src="/blog/js/back2top.js"></script>
+
+<script src="/blog/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>

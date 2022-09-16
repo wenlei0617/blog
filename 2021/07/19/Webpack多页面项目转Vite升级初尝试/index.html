@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="前端">
+    <meta name="author" content="Gary">
+    
+    <title>
+        
+            Webpack多页面项目转Vite升级初尝试 |
+        
+        随记
+    </title>
+    
+<link rel="stylesheet" href="/blog/css/style.css">
+
+    <link rel="shortcut icon" href="/blog/images/logo.svg">
+    
+<link rel="stylesheet" href="/blog/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"wenlei0617.github.io","root":"/blog/","language":"zh-CN"};
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/blog/images/bg.svg","description":"心怀热爱，奔赴山海，看云卷云舒，望潮起潮落"},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                随记
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/archives">归档</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">Webpack多页面项目转Vite升级初尝试</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/blog/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">Gary</span>
+                        
+                            <span class="author-label">Lv2</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2021-07-19 18:18:11</span>
+        <span class="mobile">2021-07-19 18:18</span>
+    </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <blockquote>
+<p>最近社区讨论Vite火热，而且听说它是个“快枪手”，作为一个切图仔快代表着效率，怀着对快的期待和提高自己的眼界(吹牛的本事)，尝试使用Vite对现有一个基于webpack多页面项目进行升级。</p>
+</blockquote>
+<p>本文非深入了解，从中你能对Vite有个初步的认识，以此来对比与Webpack的差异，看完后你能了解到以下内容：</p>
+<ul>
+<li>Vite火热的原因</li>
+<li>Vite的优点是什么</li>
+<li>Vite的缺点是什么</li>
+<li>升级过程的坑</li>
+<li>升级后的项目的提升(打包速度具象化，热更新速度具象化，包体积具象化)</li>
+</ul>
+<h2 id="Vite的吸引力"><a href="#Vite的吸引力" class="headerlink" title="Vite的吸引力"></a>Vite的吸引力</h2><p>是什么原因导致Vite让那么多人垂涎呢？我最开始听到Vite时他们说它真的很快，但是大家都是打包工具，为什么说Vite比Webpack快呢？我们一起来揭秘，官方是这样介绍Vite的：</p>
+<ul>
+<li>极速的服务启动，使用原生 ESM 文件，无需打包!</li>
+<li>轻量快速的热重载，无论应用程序大小如何，都始终极快的模块热重载（HMR）</li>
+<li>丰富的功能，对 TypeScript、JSX、CSS 等支持开箱即用。</li>
+<li>优化的构建，可选 “多页应用” 或 “库” 模式的预配置 Rollup 构建</li>
+<li>通用的插件，在开发和构建之间共享 Rollup-superset 插件接口。</li>
+<li>完整类型化的API，灵活的 API 和完整 TypeScript 类型</li>
+</ul>
+<p>我们来新建一个Vite的demo，使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn create vite</span><br></pre></td></tr></table></figure>
+<p>就能轻松的创建起项目，其中会让你选择你要使用的框架，操作完成后，我们会看到根目录有一个index.html，<br>和Webpack不同，Vite是基于html作为入口，而Webpack是基于Js作为入口。在html中我们看到利用Vite建起的项目script中使用了type&#x3D;”module”，这是什么呢？ES Modules 是用于处理模块的 ECMAScript 标准。通过设置type&#x3D;”module”，我们可以在当前脚本支持使用import export来进行编写代码。</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/3039b5c8217b423482b833f15eeedf67~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<p>基本上现代浏览器都已经支持ESM的方式了</p>
+<p>而这就是Vite快的秘密，Vite通过使用esm和koa中间件拦截请求，我们可以只在需要某个模块的时候动态（借助 import() ）的引入它，而不需要提前打包。这一点和Webpack完全不同，Webpack会将各模块提前打包进bundle里，但打包的过程是静态的，就是在修改某一处代码后，会把所有模块进行打包，这样的坏处就是随着项目越来越大打包后的 bundle 也越来越大(当然Webpack也提供了很多类似bable-cache等插件来提高效率)，即使这样Webpack依旧会执行打包这个过程，这样对比Vite来说确实不够优雅，因为vite来说，借住ESM它直接省去了打包这个过程。</p>
+<h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><ol>
+<li>创建简单</li>
+</ol>
+<p>Vite继承了Vue优良的传统，重在提高开发效率，所以相比Webpack减少了很多配置，使用Vite，你不再配置各种基础预处理器，它都内置了</p>
+<ol start="2">
+<li>与框架无关</li>
+</ol>
+<p>虽然它的作者是Vue的创造者，但是Vite却与框架无关，它能和React，Vue，Svelte、Preact等框架使用</p>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ol>
+<li>灵活度</li>
+</ol>
+<p>因为本身的内部封装好了很多东西，所以现在看来定制化是比较困难的，这个点是看自己取舍，各有利弊。</p>
+<ol start="2">
+<li>未知性</li>
+</ol>
+<p>现在Vite2出来没多久，社区还没有很多大型项目实践，是否还有很多坑有待观望</p>
+<ol start="3">
+<li>构建不一致</li>
+</ol>
+<p>这也是我最担心的一点，开发的时候使用ESM方式进行开发，打包的时候使用Rollup进行打包，也就是说使用了两套方式，会担心生产环境和开发环境不一致情况，导致打包后的bug不好在生产环境中进行调试，这个点有待考察，需要对之后迁移的项目进行深度测试。</p>
+<h2 id="项目迁移"><a href="#项目迁移" class="headerlink" title="项目迁移"></a>项目迁移</h2><p>因为我们项目是从古老的手动打包升级到了webpack打包，大部分页面本身都使用了html，所以迁移成本比较少，主要是在原有的html中插入script type&#x3D;module代码</p>
+<p>迁移时遇到的问题：</p>
+<ol>
+<li>过去一些图片资源使用require引入的均无法使用，需要修改为import，这点是因为本身Vite开发环境基于ESM而不支持CommonJs</li>
+<li>过去我们使用环境变量并没特别的规范，在Vite中为了防止意外地将一些环境变量泄漏到客户端，只有以 VITE_ 为前缀的变量才会暴露给经过 Vite 处理的代码（这点和CRA类似），并且不是使用process.env的方式获取环境变量，而是使用import.meta.env的方式去获取。</li>
+<li>Vite默认打包兼容ESM，这里我们需要安装@vitejs&#x2F;plugin-legacy来解决不支持的浏览器处理</li>
+</ol>
+<p>整个项目迁移只用了不到2个小时，大部分时间在处理通过require引入的模块和资源，而打包好的文件是否能使用到生产环境还有待考究，打包后依然会引入ESM的方式，但是在ESM后加入了NoModule的加载方式。这样的好处在于现代浏览器我们将不在用加载那么多Polyfill，减少不必要的资源加载。如下：</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c0bdd27d208044778b1d20bec90779f9~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<h2 id="项目提升"><a href="#项目提升" class="headerlink" title="项目提升"></a>项目提升</h2><p>测试环境 window10 8G i5-6200U</p>
+<p>单页面测试使用了项目中涉及资源和依赖最多的一个页面（图片资源100+，js文件20+）;</p>
+<table>
+<thead>
+<tr>
+<th>打包工具</th>
+<th>单页面启动</th>
+<th>多页面启动</th>
+<th>单页面开发环境修改</th>
+<th>多页面开发环境修改</th>
+<th>单页面打包</th>
+<th>多页面打包</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>webpack4</td>
+<td>9.964s</td>
+<td>18.829s</td>
+<td>0.827s</td>
+<td>4.347s</td>
+<td>11.981s</td>
+<td>26.57s</td>
+</tr>
+<tr>
+<td>vite</td>
+<td>0.694s</td>
+<td>1.5s</td>
+<td>未知(&lt;50ms)</td>
+<td>未知(&lt;50ms)</td>
+<td>8.8s</td>
+<td>27.09s</td>
+</tr>
+</tbody></table>
+<p>在打包效率上基本一致，因为本身打包Webpack和Rollup差异不大，在打包上的优势就没有那么突出，打包体积上也相差不多，这里也就不做对比。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>完成了项目的迁移，对Vite有了大致的了解，在兼容性配置上有很多坑，可以继续沿用Webpack进行打包，而在开发环境使用Vite进行开发或许也是一个很好的搭配。后续主要还是对Vite配置做详细的认识和对项目进行测试，看是否有未触及的坑，未来对Vite持续观望，期待(愿景)有一天能摈弃各类打包工具，原生支持那该是多么美好。</p>
+
+        </div>
+
+        
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/blog/2022/08/09/Jest%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E4%B9%8B%E6%97%85%E2%80%94%E5%AE%9E%E8%B7%B5%E6%80%BB%E7%BB%93/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Jest单元测试之旅—实践总结</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/blog/2021/07/01/%E5%85%B3%E4%BA%8EReact%E7%9A%84Key%E5%AF%BC%E8%87%B4%E7%9A%84bug%E6%80%BB%E7%BB%93/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">关于React的Key导致的bug总结</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">Gary</a>
+        </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/blog/js/utils.js"></script>
+
+<script src="/blog/js/main.js"></script>
+
+<script src="/blog/js/header-shrink.js"></script>
+
+<script src="/blog/js/back2top.js"></script>
+
+<script src="/blog/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>

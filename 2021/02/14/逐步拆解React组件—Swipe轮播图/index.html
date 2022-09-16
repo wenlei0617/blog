@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="前端">
+    <meta name="author" content="Gary">
+    
+    <title>
+        
+            逐步拆解React组件—Swipe轮播图 |
+        
+        随记
+    </title>
+    
+<link rel="stylesheet" href="/blog/css/style.css">
+
+    <link rel="shortcut icon" href="/blog/images/logo.svg">
+    
+<link rel="stylesheet" href="/blog/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"wenlei0617.github.io","root":"/blog/","language":"zh-CN"};
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/blog/images/bg.svg","description":"心怀热爱，奔赴山海，看云卷云舒，望潮起潮落"},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                随记
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/archives">归档</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">逐步拆解React组件—Swipe轮播图</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/blog/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">Gary</span>
+                        
+                            <span class="author-label">Lv2</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2021-02-14 18:12:22</span>
+        <span class="mobile">2021-02-14 18:12</span>
+    </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <blockquote>
+<p>以前有写过一篇<a class="link"   target="_blank" rel="noopener" href="https://juejin.cn/post/6844904008646131725" >简版的swipe轮播组件<i class="fas fa-external-link-alt"></i></a>，当时并没有考虑很多细节和通用参数配置，主要还是在于记录实现思路，也就没有源码，赶在年前重新拾起来好好的整理了一番，并封装成了组件，除react本身外无任何第三方依赖，gzip压缩后大小仅3.7kb，<a class="link"   target="_blank" rel="noopener" href="https://github.com/wenlei0617/lumu-swipe" >源码地址<i class="fas fa-external-link-alt"></i></a>、<a class="link"   target="_blank" rel="noopener" href="http://49.235.254.79/lumu-swipe/" >示例地址<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<h3 id="思路回顾"><a href="#思路回顾" class="headerlink" title="思路回顾"></a>思路回顾</h3><p><b>核心思想是利用视觉上的感觉，在用户无感的情况下切换回去，这里有一个思路和以前有点不同，切换回去这个动作改在了切换的时候进行复位重置并且弃用用了之前的absolute布局，改用了flex布局的方式，移动主要还是依靠通过改变外层容器transform来实现,无缝轮播的思路步骤如下</b></p>
+<ol>
+<li>当前位置在如图，位置3上，红色箭头即手机可视区。</li>
+<li>往右移动前，把位置1通过transform移动到位置3后面</li>
+<li>然后再移动外层容器，完成第一次的无缝</li>
+<li>再往右移动前，先重置位置1到原始位置(快速移动)</li>
+<li>并把外层容器移动到位置1处到达可视区(快速移动)</li>
+<li>再进行右移动，完成第二次的无缝。左移同理</li>
+</ol>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a3c01c48663349559716462bd83ece24~tplv-k3u1fbpfcp-watermark.image"></p>
+<p>设计思路了解后，就开始对组件API和方法的设计，文档如下</p>
+<h4 id="API"><a href="#API" class="headerlink" title="API"></a>API</h4><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+<th>类型</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>autoplay</td>
+<td>可选，自动轮播间隔，单位ms</td>
+<td>number</td>
+<td>3000</td>
+</tr>
+<tr>
+<td>duration</td>
+<td>可选，动画时长,单位ms</td>
+<td>number</td>
+<td>500</td>
+</tr>
+<tr>
+<td>initialSwipe</td>
+<td>可选，默认位置</td>
+<td>number</td>
+<td>0</td>
+</tr>
+<tr>
+<td>loop</td>
+<td>可选，是否循环播放</td>
+<td>boolean</td>
+<td>true</td>
+</tr>
+<tr>
+<td>vertical</td>
+<td>可选，是否纵向滑动</td>
+<td>boolean</td>
+<td>false</td>
+</tr>
+<tr>
+<td>touchable</td>
+<td>可选，是否可手势滑动</td>
+<td>boolean</td>
+<td>true</td>
+</tr>
+<tr>
+<td>showIndicators</td>
+<td>可选，是否显示dot</td>
+<td>boolean</td>
+<td>true</td>
+</tr>
+<tr>
+<td>style</td>
+<td>可选，容器样式, 纵向时需要设置其高度</td>
+<td>object</td>
+<td>-</td>
+</tr>
+<tr>
+<td>onSlideChange</td>
+<td>可选，切换索引的回调</td>
+<td>function(current)</td>
+<td>-</td>
+</tr>
+</tbody></table>
+<h4 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h4><table>
+<thead>
+<tr>
+<th>名称</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>slideTo(to, swiping)</td>
+<td>切换到指定索引，swiping &#x3D; true时，不使用动画</td>
+</tr>
+<tr>
+<td>next()</td>
+<td>切换到下一个索引</td>
+</tr>
+<tr>
+<td>prev()</td>
+<td>切换到上一个索引</td>
+</tr>
+</tbody></table>
+<p>准备就绪，愉快的开始针对文档进行代码实现吧！！</p>
+<h3 id="第一步，布局页面"><a href="#第一步，布局页面" class="headerlink" title="第一步，布局页面"></a>第一步，布局页面</h3><p>这里通过把组件拆分为Swipe和SwipeItem两个组件，Swipe为主要容器，SwipeItem为子项，Swipe验证children是否为SwipeItem组件，布局上采用了flex布局，本身flexDirection可以进行横向和竖向的展示，以便于后期通过vertical属性进行横向和纵向的布局切换。轮播移动主要依靠改变外层容器的transfrom属性进行偏移，布局核心在于动态计算SwipeItem的宽度和移动容器的宽度(SwipeItem的宽度 * SwipeItem的个数)。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Swipe.tsx</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">React</span> <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">SwipeItem</span> <span class="keyword">from</span> <span class="string">&#x27;./SwipeItem&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;./style.less&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">Swipe</span>:<span class="title class_">React</span>.<span class="property">FC</span>&lt;<span class="title class_">SwipeProps</span>&gt; = <span class="function">(<span class="params">props</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123;</span><br><span class="line">        initialSwipe = <span class="number">0</span>, <span class="comment">// 默认索引</span></span><br><span class="line">        vertical = <span class="literal">false</span>, <span class="comment">// 是否纵向</span></span><br><span class="line">        duration = <span class="number">500</span>,   <span class="comment">// 切换动画时间</span></span><br><span class="line">        autoplay = <span class="number">3000</span>,  <span class="comment">// 自动播放间隔</span></span><br><span class="line">        touchable = <span class="literal">true</span>, <span class="comment">// 是否支持手势滑动</span></span><br><span class="line">        loop = <span class="literal">true</span>,      <span class="comment">// 是否无缝轮播</span></span><br><span class="line">        showIndicators = <span class="literal">true</span>, <span class="comment">// 是否显示dots</span></span><br><span class="line">        onSlideChange</span><br><span class="line">    &#125; = props;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 计算SwipeItem个数</span></span><br><span class="line">    <span class="keyword">const</span> count = <span class="title function_">useMemo</span>(<span class="function">() =&gt;</span> <span class="title class_">React</span>.<span class="property">Children</span>.<span class="title function_">count</span>(props.<span class="property">children</span>), [props.<span class="property">children</span>]);</span><br><span class="line">    <span class="comment">// 获取容器的宽度和高度</span></span><br><span class="line">    <span class="keyword">const</span> &#123; size, root &#125; = useRect&lt;<span class="title class_">HTMLDivElement</span>&gt;([count]);</span><br><span class="line">    <span class="comment">// 获取SwipeItem的高度/宽度的值</span></span><br><span class="line">    <span class="keyword">const</span> itemSize = <span class="title function_">useMemo</span>(<span class="function">() =&gt;</span> vertical ? size.<span class="property">height</span> : size.<span class="property">width</span>, [size, vertical]);</span><br><span class="line">    <span class="comment">// 获取SwipeItem应该设置高度还是宽度</span></span><br><span class="line">    <span class="keyword">const</span> itemKey = <span class="title function_">useMemo</span>(<span class="function">() =&gt;</span> vertical ? <span class="string">&#x27;height&#x27;</span> : <span class="string">&#x27;width&#x27;</span>, [vertical]);</span><br><span class="line">    <span class="comment">// 设置SwipeItem的样式</span></span><br><span class="line">    <span class="keyword">const</span> itemStyle = <span class="title function_">useMemo</span>(<span class="function">() =&gt;</span> (&#123; [itemKey]: itemSize &#125;), [itemKey, itemSize]);</span><br><span class="line">    <span class="comment">// 设置移动容器的样式</span></span><br><span class="line">    <span class="keyword">const</span> wrappStyle = <span class="title function_">useMemo</span>(<span class="function">() =&gt;</span> (&#123; [itemKey]: itemSize * count &#125;), [count, itemSize, itemKey]);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">    	<span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">ref</span>=<span class="string">&#123;root&#125;</span> <span class="attr">style</span>=<span class="string">&#123;props.style&#125;</span> <span class="attr">className</span>=<span class="string">&quot;lumu-swipe&quot;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">&#123;wrappStyle&#125;</span> <span class="attr">className</span>=<span class="string">&#123;</span>`<span class="attr">lumu-swipe__container</span> $&#123;<span class="attr">vertical</span> ? &#x27;<span class="attr">lumu-swipe__vertical</span>&#x27; <span class="attr">:</span> &#x27;&#x27;&#125;`&#125;&gt;</span></span></span><br><span class="line"><span class="language-xml">            &#123;</span></span><br><span class="line"><span class="language-xml">                React.Children.map(props.children, (child, index) =&gt; &#123;</span></span><br><span class="line"><span class="language-xml">                    if (!React.isValidElement(child)) return null</span></span><br><span class="line"><span class="language-xml">                    if (child.type !== SwipeItem) return null;</span></span><br><span class="line"><span class="language-xml">                    // 通过cloneElement来对child进行props传递</span></span><br><span class="line"><span class="language-xml">                    return React.cloneElement(child, &#123;</span></span><br><span class="line"><span class="language-xml">                        style: itemStyle,</span></span><br><span class="line"><span class="language-xml">                        vertical: vertical</span></span><br><span class="line"><span class="language-xml">                    &#125;)</span></span><br><span class="line"><span class="language-xml">                &#125;);</span></span><br><span class="line"><span class="language-xml">            &#125;	</span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SwipeItem.tsx</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">React</span> <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;./style.less&#x27;</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="title class_">SwipeItem</span>:<span class="title class_">React</span>.<span class="property">FC</span>&lt;<span class="title class_">SwipeItemProps</span>&gt; = <span class="function">(<span class="params">props</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; children, style, vertical &#125; = props;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">className</span>=<span class="string">&quot;lumu-swipe__item&quot;</span>&#125; <span class="attr">style</span>=<span class="string">&#123;style&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            &#123;children&#125;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">    )</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// style.less</span></span><br><span class="line"><span class="variable">@name:</span> lumu;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.@&#123;name&#125;</span><span class="selector-tag">-swipe</span> &#123;</span><br><span class="line">    <span class="attribute">overflow</span>: hidden;</span><br><span class="line">    <span class="selector-tag">&amp;</span><span class="selector-tag">__container</span> &#123;</span><br><span class="line">        <span class="attribute">display</span>: flex;</span><br><span class="line">        <span class="attribute">align-items</span>: center;</span><br><span class="line">        <span class="attribute">height</span>: <span class="number">100%</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="selector-tag">&amp;</span><span class="selector-tag">__vertical</span> &#123;</span><br><span class="line">        <span class="attribute">flex-direction</span>: column;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="selector-tag">&amp;</span><span class="selector-tag">__item</span> &#123;</span><br><span class="line">        <span class="attribute">width</span>: <span class="number">100%</span>;</span><br><span class="line">        <span class="attribute">height</span>: <span class="number">100%</span>;</span><br><span class="line">        <span class="attribute">flex-shrink</span>: <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="第二步，移动容器（核心）"><a href="#第二步，移动容器（核心）" class="headerlink" title="第二步，移动容器（核心）"></a>第二步，移动容器（核心）</h3><p>此时基本可以看到一个静态的轮播图布局了，接下来开始核心的内容。核心内容均封装在一个useSwipe的hook方法里面，通过useSwipe暴露的方法，后期去实现自动播放、手势滑动等等功能</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Swipe.tsx</span></span><br><span class="line">	...同上省略</span><br><span class="line">     <span class="comment">// 核心方法</span></span><br><span class="line">    <span class="keyword">const</span> &#123; </span><br><span class="line">        swipeRef, <span class="comment">// 移动容器的ref</span></span><br><span class="line">        setRefs, <span class="comment">// 设置子组件ref</span></span><br><span class="line">        current, <span class="comment">// 当前索引</span></span><br><span class="line">        slideTo, <span class="comment">// 移动位置</span></span><br><span class="line">        next, <span class="comment">// 通过slideTo封装的快速移动方法</span></span><br><span class="line">        prev, <span class="comment">// 通过slideTo封装的快速移动方法</span></span><br><span class="line">        loopMove, <span class="comment">// 通过slideTo封装的循环移动方法</span></span><br><span class="line">    &#125; = <span class="title function_">useSwipe</span>(&#123; count, vertical, duration, <span class="attr">size</span>: itemSize, loop &#125;); </span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">    	<span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">ref</span>=<span class="string">&#123;root&#125;</span> <span class="attr">style</span>=<span class="string">&#123;props.style&#125;</span> <span class="attr">className</span>=<span class="string">&quot;lumu-swipe&quot;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;<span class="name">div</span> <span class="attr">ref</span>=<span class="string">&#123;swipeRef&#125;</span> <span class="attr">style</span>=<span class="string">&#123;wrappStyle&#125;</span> <span class="attr">className</span>=<span class="string">&#123;</span>`<span class="attr">lumu-swipe__container</span> $&#123;<span class="attr">vertical</span> ? &#x27;<span class="attr">lumu-swipe__vertical</span>&#x27; <span class="attr">:</span> &#x27;&#x27;&#125;`&#125;&gt;</span></span></span><br><span class="line"><span class="language-xml">            &#123;</span></span><br><span class="line"><span class="language-xml">                React.Children.map(props.children, (child, index) =&gt; &#123;</span></span><br><span class="line"><span class="language-xml">                    if (!React.isValidElement(child)) return null</span></span><br><span class="line"><span class="language-xml">                    if (child.type !== SwipeItem) return null;</span></span><br><span class="line"><span class="language-xml">                    // 通过cloneElement来对child进行props传递</span></span><br><span class="line"><span class="language-xml">                    return React.cloneElement(child, &#123;</span></span><br><span class="line"><span class="language-xml">                        style: itemStyle,</span></span><br><span class="line"><span class="language-xml">                        vertical: vertical,</span></span><br><span class="line"><span class="language-xml">                        // 通过setRefs挂载子组件实例，用于后期的移动</span></span><br><span class="line"><span class="language-xml">                        ref: setRefs(index)</span></span><br><span class="line"><span class="language-xml">                    &#125;)</span></span><br><span class="line"><span class="language-xml">                &#125;);</span></span><br><span class="line"><span class="language-xml">            &#125;	</span></span><br><span class="line"><span class="language-xml">            <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// useSwipe.ts</span></span><br><span class="line"><span class="keyword">import</span> &#123; useRef, useState, useMemo, useEffect &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">SwipeItemRef</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;../SwipeItem&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> useRefs <span class="keyword">from</span> <span class="string">&#x27;./useRefs&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">SwipeParams</span> = &#123;</span><br><span class="line">    <span class="attr">count</span>: <span class="built_in">number</span>;</span><br><span class="line">    <span class="attr">vertical</span>: <span class="built_in">boolean</span>;</span><br><span class="line">    <span class="attr">duration</span>: <span class="built_in">number</span>;</span><br><span class="line">    <span class="attr">size</span>: <span class="built_in">number</span>;</span><br><span class="line">    <span class="attr">loop</span>: <span class="built_in">boolean</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">SlideToParams</span> = <span class="title class_">Partial</span>&lt;&#123;</span><br><span class="line">    <span class="attr">step</span>: <span class="built_in">number</span>;</span><br><span class="line">    <span class="attr">swiping</span>: <span class="built_in">boolean</span>;</span><br><span class="line">    <span class="attr">offset</span>: <span class="built_in">number</span>;</span><br><span class="line">&#125;&gt;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">useSwipe</span> = (<span class="params">options: SwipeParams</span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; count, vertical, duration, size, loop &#125; = options;</span><br><span class="line">    <span class="comment">// 当前索引</span></span><br><span class="line">    <span class="keyword">const</span> [current, setCurrent] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line">    <span class="comment">// 计算索引，也是抛出到外部的索引。</span></span><br><span class="line">    <span class="keyword">const</span> realCurrent = <span class="title function_">useMemo</span>(<span class="function">() =&gt;</span> (current + count) % count || <span class="number">0</span>, [current, count]);</span><br><span class="line">    <span class="comment">// 移动容器</span></span><br><span class="line">    <span class="keyword">const</span> swipeRef = useRef&lt;<span class="title class_">HTMLDivElement</span>&gt;(<span class="literal">null</span>);</span><br><span class="line">    <span class="comment">// 这个方法主要是挂载子组件实例，偏于后面操作子组件移动位置</span></span><br><span class="line">    <span class="keyword">const</span> [refs, setRefs] = useRefs&lt;<span class="title class_">SwipeItemRef</span>&gt;();</span><br><span class="line">    <span class="comment">// 最小索引值</span></span><br><span class="line">    <span class="keyword">const</span> minCurrent = <span class="title function_">useMemo</span>(<span class="function">() =&gt;</span> loop ? -<span class="number">1</span> : <span class="number">0</span>, [loop]);</span><br><span class="line">    <span class="comment">// 最大索引值</span></span><br><span class="line">    <span class="keyword">const</span> maxCurrent = <span class="title function_">useMemo</span>(<span class="function">() =&gt;</span> loop ? count : count - <span class="number">1</span>, [loop, count]);</span><br><span class="line">    <span class="comment">// 当前移动方向</span></span><br><span class="line">    <span class="keyword">const</span> loopDirection = useRef&lt;<span class="number">1</span>|-<span class="number">1</span>&gt;(<span class="number">1</span>);</span><br><span class="line">	</span><br><span class="line">    <span class="comment">// 监听索引，来改变当前移动方向</span></span><br><span class="line">    <span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (realCurrent === <span class="number">0</span>) &#123;</span><br><span class="line">            loopDirection.<span class="property">current</span> = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (realCurrent === count - <span class="number">1</span>) &#123;</span><br><span class="line">            loopDirection.<span class="property">current</span> = -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, [realCurrent]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置移动容器的位置和是否有移动动画</span></span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">setStyle</span> = (<span class="params">dom: HTMLDivElement | <span class="literal">null</span>, options: &#123; swiping: <span class="built_in">boolean</span>, offset: <span class="built_in">number</span> &#125;</span>) =&gt; &#123;</span><br><span class="line">        <span class="keyword">if</span> (!dom) <span class="keyword">return</span>;</span><br><span class="line">        <span class="keyword">const</span> &#123; swiping, offset &#125; = options;</span><br><span class="line">        dom.<span class="property">style</span>.<span class="property">transition</span> = <span class="string">`all <span class="subst">$&#123;swiping ? <span class="number">0</span> : duration&#125;</span>ms`</span>;</span><br><span class="line">        dom.<span class="property">style</span>.<span class="property">transform</span> = <span class="string">`translate<span class="subst">$&#123;vertical ? <span class="string">&#x27;Y&#x27;</span> : <span class="string">&#x27;X&#x27;</span>&#125;</span>(<span class="subst">$&#123;offset&#125;</span>px)`</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 复位容器</span></span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">resetCurrent</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">        <span class="title function_">setStyle</span>(swipeRef.<span class="property">current</span>, &#123;</span><br><span class="line">            <span class="attr">swiping</span>: <span class="literal">true</span>, <span class="attr">offset</span>: -realCurrent * size</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 重置子组件位置</span></span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">resetChild</span> = (<span class="params">step: <span class="built_in">number</span>, offset: <span class="built_in">number</span></span>) =&gt; &#123;</span><br><span class="line">        <span class="keyword">let</span> direction = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">        <span class="keyword">if</span> (step &lt; <span class="number">0</span> || offset &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            direction = <span class="string">&#x27;left&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (step &gt; <span class="number">0</span> || offset &lt; <span class="number">0</span>) &#123;</span><br><span class="line">            direction = <span class="string">&#x27;right&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> ([-<span class="number">1</span>, count - <span class="number">1</span>].<span class="title function_">includes</span>(current)) &#123;</span><br><span class="line">            refs[<span class="number">0</span>].<span class="title function_">setOffset</span>(direction === <span class="string">&#x27;right&#x27;</span> ? count * size : <span class="number">0</span>);</span><br><span class="line">            refs[refs.<span class="property">length</span> - <span class="number">1</span>].<span class="title function_">setOffset</span>(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> ([count, <span class="number">0</span>].<span class="title function_">includes</span>(current)) &#123;</span><br><span class="line">            refs[<span class="number">0</span>].<span class="title function_">setOffset</span>(<span class="number">0</span>);</span><br><span class="line">            refs[refs.<span class="property">length</span> - <span class="number">1</span>].<span class="title function_">setOffset</span>(direction === <span class="string">&#x27;right&#x27;</span> ? <span class="number">0</span> : -count * size)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    <span class="comment">// 移动容器，step移动的步数， swiping是否关闭动画， offset偏移量，主要用于手势移动</span></span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">slideTo</span> = (<span class="params">&#123; step = <span class="number">0</span>, swiping = <span class="literal">false</span>, offset = <span class="number">0</span> &#125;: SlideToParams</span>) =&gt; &#123;</span><br><span class="line">        <span class="keyword">if</span> (count &lt;= <span class="number">1</span>) <span class="keyword">return</span>;</span><br><span class="line">        <span class="comment">// 如果是无缝轮播，就需要移动之前重置子组件位置</span></span><br><span class="line">        loop &amp;&amp; <span class="title function_">resetChild</span>(step, offset);</span><br><span class="line">        <span class="comment">// 计算将要到达的索引</span></span><br><span class="line">        <span class="keyword">const</span> fetureCurrent = <span class="title class_">Math</span>.<span class="title function_">min</span>(<span class="title class_">Math</span>.<span class="title function_">max</span>(realCurrent + step, minCurrent), maxCurrent);</span><br><span class="line">        <span class="comment">// 计算移动的偏移量</span></span><br><span class="line">        <span class="keyword">const</span> fetureOffset = -fetureCurrent * size + offset;</span><br><span class="line">        <span class="keyword">if</span> (swiping) &#123;</span><br><span class="line">            <span class="title function_">setStyle</span>(swipeRef.<span class="property">current</span>, &#123;</span><br><span class="line">                swiping, <span class="attr">offset</span>: fetureOffset</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="title function_">requestAnimationFrame</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">                <span class="title function_">requestAnimationFrame</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">                    <span class="title function_">setStyle</span>(swipeRef.<span class="property">current</span>, &#123;</span><br><span class="line">                        swiping, <span class="attr">offset</span>: fetureOffset</span><br><span class="line">                    &#125;);</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="title function_">setCurrent</span>(fetureCurrent);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">next</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">        <span class="title function_">resetCurrent</span>();</span><br><span class="line">        <span class="title function_">slideTo</span>(&#123; <span class="attr">step</span>: <span class="number">1</span> &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">prev</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">        <span class="title function_">resetCurrent</span>();</span><br><span class="line">        <span class="title function_">slideTo</span>(&#123; <span class="attr">step</span>: -<span class="number">1</span> &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">loopSwipe</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">        <span class="keyword">if</span> (loop) &#123;</span><br><span class="line">            <span class="title function_">next</span>();</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (loopDirection.<span class="property">current</span> === <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="title function_">next</span>();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="title function_">prev</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        swipeRef,</span><br><span class="line">        setRefs,</span><br><span class="line">        <span class="attr">current</span>: realCurrent,</span><br><span class="line">        slideTo,</span><br><span class="line">        next,</span><br><span class="line">        prev,</span><br><span class="line">        loopSwipe</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> useSwipe;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SwipeItem.tsx</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">React</span>, &#123; useImperativeHandle, useMemo, useRef, useState &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">SwipeProps</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;./Swipe&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">SwipeItemRef</span> &#123;</span><br><span class="line">    <span class="attr">setOffset</span>: <span class="title class_">React</span>.<span class="property">Dispatch</span>&lt;<span class="title class_">React</span>.<span class="property">SetStateAction</span>&lt;<span class="built_in">number</span>&gt;&gt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">SwipeItemProps</span> &#123;</span><br><span class="line">    <span class="keyword">readonly</span> vertical?: <span class="title class_">SwipeProps</span>[<span class="string">&#x27;vertical&#x27;</span>];</span><br><span class="line">    <span class="keyword">readonly</span> style?: <span class="title class_">React</span>.<span class="property">CSSProperties</span>;</span><br><span class="line">    <span class="attr">children</span>: <span class="title class_">React</span>.<span class="property">ReactNode</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">SwipeItem</span> = <span class="title class_">React</span>.<span class="property">forwardRef</span>&lt;<span class="title class_">SwipeItemRef</span>, <span class="title class_">SwipeItemProps</span>&gt;(<span class="function">(<span class="params">props, ref</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; children, style, vertical &#125; = props;</span><br><span class="line">    <span class="keyword">const</span> [offset, setOffset] = <span class="title function_">useState</span>(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">const</span> swipeItemRef = useRef&lt;<span class="title class_">HTMLDivElement</span>&gt;(<span class="literal">null</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="title function_">useImperativeHandle</span>(ref, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            setOffset</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> itemStyle = <span class="title function_">useMemo</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">transform</span>: offset ? <span class="string">`translate<span class="subst">$&#123;props.vertical ? <span class="string">&#x27;Y&#x27;</span> : <span class="string">&#x27;X&#x27;</span>&#125;</span>(<span class="subst">$&#123;offset&#125;</span>px)`</span> : <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">            ...style</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, [offset, style, vertical]);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">ref</span>=<span class="string">&#123;swipeItemRef&#125;</span> <span class="attr">className</span>=<span class="string">&#123;</span>&quot;<span class="attr">lumu-swipe__item</span>&quot;&#125; <span class="attr">style</span>=<span class="string">&#123;itemStyle&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            &#123;children&#125;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">    )</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="第三步，手势处理"><a href="#第三步，手势处理" class="headerlink" title="第三步，手势处理"></a>第三步，手势处理</h3><p>针对于手势，封装到了一个useTouch方法里，主要是记录手势时间，手势的差值</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// useTouch.ts</span></span><br><span class="line"><span class="keyword">import</span> &#123; useRef &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">useTouch</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> startX = useRef&lt;<span class="built_in">number</span>&gt;(<span class="number">0</span>); <span class="comment">// 起点X坐标</span></span><br><span class="line">    <span class="keyword">const</span> startY = useRef&lt;<span class="built_in">number</span>&gt;(<span class="number">0</span>); <span class="comment">// 起点Y坐标</span></span><br><span class="line">    <span class="keyword">const</span> deltaX = useRef&lt;<span class="built_in">number</span>&gt;(<span class="number">0</span>); <span class="comment">// 移动的X坐标距离</span></span><br><span class="line">    <span class="keyword">const</span> deltaY = useRef&lt;<span class="built_in">number</span>&gt;(<span class="number">0</span>); <span class="comment">// 移动的Y坐标距离</span></span><br><span class="line">    <span class="keyword">const</span> time = useRef&lt;<span class="built_in">number</span>&gt;(<span class="number">0</span>); <span class="comment">// 时间记录</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">reset</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">        startX.<span class="property">current</span> = <span class="number">0</span>;</span><br><span class="line">        startY.<span class="property">current</span> = <span class="number">0</span>;</span><br><span class="line">        deltaX.<span class="property">current</span> = <span class="number">0</span>;</span><br><span class="line">        deltaY.<span class="property">current</span> = <span class="number">0</span>;</span><br><span class="line">        time.<span class="property">current</span> = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">start</span> = (<span class="params">event: React.TouchEvent | TouchEvent</span>) =&gt; &#123;</span><br><span class="line">        <span class="title function_">reset</span>();</span><br><span class="line">        time.<span class="property">current</span> = <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getTime</span>();</span><br><span class="line">        startX.<span class="property">current</span> = event.<span class="property">touches</span>[<span class="number">0</span>].<span class="property">clientX</span>;</span><br><span class="line">        startY.<span class="property">current</span> = event.<span class="property">touches</span>[<span class="number">0</span>].<span class="property">clientY</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">move</span> = (<span class="params">event: React.TouchEvent | TouchEvent</span>) =&gt; &#123;</span><br><span class="line">        <span class="keyword">if</span> (!time.<span class="property">current</span>) <span class="keyword">return</span>;</span><br><span class="line">        deltaX.<span class="property">current</span> = event.<span class="property">touches</span>[<span class="number">0</span>].<span class="property">clientX</span> - startX.<span class="property">current</span>;</span><br><span class="line">        deltaY.<span class="property">current</span> = event.<span class="property">touches</span>[<span class="number">0</span>].<span class="property">clientY</span> - startY.<span class="property">current</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">end</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">        <span class="keyword">const</span> tempDeltaX = deltaX.<span class="property">current</span>;</span><br><span class="line">        <span class="keyword">const</span> tempDeltaY = deltaY.<span class="property">current</span>;</span><br><span class="line">        <span class="keyword">const</span> timediff = <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getTime</span>() - time.<span class="property">current</span>;</span><br><span class="line">        <span class="title function_">reset</span>();</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">deltaX</span>: tempDeltaX,</span><br><span class="line">            <span class="attr">deltaY</span>: tempDeltaY,</span><br><span class="line">            <span class="attr">time</span>: timediff</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">getDelta</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">deltaX</span>: deltaX.<span class="property">current</span>,</span><br><span class="line">            <span class="attr">deltaY</span>: deltaY.<span class="property">current</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        move, start, end, getDelta</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SwipeItem.ts</span></span><br><span class="line">...重复代码省略</span><br><span class="line"><span class="keyword">const</span> touch = <span class="title function_">useTouch</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">onTouchStart</span> = (<span class="params">event: React.TouchEvent | TouchEvent</span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span> (!touchable) <span class="keyword">return</span>; </span><br><span class="line">    touch.<span class="title function_">start</span>(event);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">onTouchMove</span> = (<span class="params">event: React.TouchEvent | TouchEvent</span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span> (!touchable) <span class="keyword">return</span>; </span><br><span class="line">    touch.<span class="title function_">move</span>(event);</span><br><span class="line">    <span class="keyword">const</span> &#123; deltaX, deltaY &#125; = touch.<span class="title function_">getDelta</span>()</span><br><span class="line">    <span class="title function_">slideTo</span>(&#123; <span class="attr">swiping</span>: <span class="literal">true</span>, <span class="attr">offset</span>: vertical ? deltaY : deltaX &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">onTouchEnd</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span> (!touchable) <span class="keyword">return</span>; </span><br><span class="line">    <span class="keyword">const</span> &#123; deltaX, time, deltaY &#125; = touch.<span class="title function_">end</span>();</span><br><span class="line">    <span class="keyword">const</span> delta = vertical ? deltaY : deltaX;</span><br><span class="line">    <span class="keyword">const</span> step = (itemSize / <span class="number">2</span> &lt; <span class="title class_">Math</span>.<span class="title function_">abs</span>(delta) || <span class="title class_">Math</span>.<span class="title function_">abs</span>(delta / time) &gt; <span class="number">0.25</span>) ? (delta &gt; <span class="number">0</span> ? -<span class="number">1</span> : <span class="number">1</span>) : <span class="number">0</span>;</span><br><span class="line">    <span class="title function_">slideTo</span>(&#123; <span class="attr">swiping</span>: <span class="literal">false</span>, step &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="第四步，细节分支功能处理"><a href="#第四步，细节分支功能处理" class="headerlink" title="第四步，细节分支功能处理"></a>第四步，细节分支功能处理</h3><p>细节功能主要是通过上面的核心内容进行扩展，这里不再贴代码，<a class="link"   target="_blank" rel="noopener" href="https://github.com/wenlei0617/lumu-swipe" >完整源码可查看这里地址<i class="fas fa-external-link-alt"></i></a>，主要有以下几点：</p>
+<ol>
+<li>自动轮播，通过调用loopMove方法即可实现</li>
+<li>onSlideChange方法实现，通过监听current索引调用</li>
+<li>页面visiblity处理，通过监听页面visiblity来开启停止自动轮播</li>
+<li>纵向轮播时，禁止touchmove冒泡</li>
+<li>通过useImperativeHandle抛出next, prev, slideTo方法</li>
+<li>showIndicators属性的实现，也是通过slideTo和current实现dot组件，再通过属性进行显示隐藏</li>
+</ol>
+<p><a class="link"   target="_blank" rel="noopener" href="http://49.235.254.79/lumu-swipe/" >示例地址<i class="fas fa-external-link-alt"></i></a></p>
+<h3 id="往期回顾"><a href="#往期回顾" class="headerlink" title="往期回顾"></a>往期回顾</h3><ul>
+<li><a class="link"   target="_blank" rel="noopener" href="https://juejin.cn/post/6930860373830696973" >逐步拆解React组件—Lazyload懒加载<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><blockquote>
+<p>觉得有用？喜欢就收藏，顺便点个赞吧，你的支持是我最大的鼓励！觉得没用？评论区交流您的想法，虚心接受您的指导。</p>
+</blockquote>
+
+        </div>
+
+        
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/blog/2021/02/19/%E9%80%90%E6%AD%A5%E6%8B%86%E8%A7%A3React%E7%BB%84%E4%BB%B6%E2%80%94Lazyload%E6%87%92%E5%8A%A0%E8%BD%BD/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">逐步拆解React组件—Lazyload懒加载</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/blog/2020/08/17/%E5%AD%A6%E7%94%A8Hook%E5%86%99React%E7%BB%84%E4%BB%B6%E2%80%94%E2%80%94%E9%80%9A%E7%94%A8%E5%BC%B9%E5%87%BA%E5%B1%82/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">学用Hook写React组件——通用弹出层</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">Gary</a>
+        </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/blog/js/utils.js"></script>
+
+<script src="/blog/js/main.js"></script>
+
+<script src="/blog/js/header-shrink.js"></script>
+
+<script src="/blog/js/back2top.js"></script>
+
+<script src="/blog/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>

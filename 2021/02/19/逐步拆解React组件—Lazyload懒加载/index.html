@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="前端">
+    <meta name="author" content="Gary">
+    
+    <title>
+        
+            逐步拆解React组件—Lazyload懒加载 |
+        
+        随记
+    </title>
+    
+<link rel="stylesheet" href="/blog/css/style.css">
+
+    <link rel="shortcut icon" href="/blog/images/logo.svg">
+    
+<link rel="stylesheet" href="/blog/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"wenlei0617.github.io","root":"/blog/","language":"zh-CN"};
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/blog/images/bg.svg","description":"心怀热爱，奔赴山海，看云卷云舒，望潮起潮落"},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                随记
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/archives">归档</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">逐步拆解React组件—Lazyload懒加载</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/blog/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">Gary</span>
+                        
+                            <span class="author-label">Lv2</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2021-02-19 18:13:09</span>
+        <span class="mobile">2021-02-19 18:13</span>
+    </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <blockquote>
+<p>知其然，必知其所以然。在充满各种轮子的世界，即使我们没有必要自己造轮子，但是也要懂得轮子的原理，才能把别人的变成自己的。</p>
+</blockquote>
+<h3 id="为什么要用懒加载"><a href="#为什么要用懒加载" class="headerlink" title="为什么要用懒加载"></a>为什么要用懒加载</h3><p>在平时开发的时候我们总会遇到长列表，因为本身web在长列表的性能并不是特别好；加之web本身受到网络波动影响特别大，在首屏同时加载过多的内容会导致卡顿不流畅响应速度慢等问题。对此我们常用懒加载机制来进行优化。</p>
+<h3 id="什么是懒加载"><a href="#什么是懒加载" class="headerlink" title="什么是懒加载"></a>什么是懒加载</h3><p>懒加载也叫延迟加载，指的是在长网页中延迟加载dom(jquery时期常用于延迟加载图片，现在也会用于延迟加载复杂组件)，是优化网页性能的方式之一。当dom不在可视区内时，dom使用占位符展示，当到达可视区后再进行真实dom加载渲染。</p>
+<h3 id="怎么实现懒加载"><a href="#怎么实现懒加载" class="headerlink" title="怎么实现懒加载"></a>怎么实现懒加载</h3><p>随着浏览器的功能越来越强大，现如今有两种方式实现懒加载；</p>
+<ol>
+<li>使用监听scroll事件进行监听<ul>
+<li>优点：兼容性好；</li>
+<li>缺点：实现复杂；计算量大性能差；</li>
+</ul>
+</li>
+<li>使用IntersectionObserver方式进行监听<ul>
+<li>优点：实现简单；性能高；</li>
+<li>缺点：兼容性不够好(<a class="link"   target="_blank" rel="noopener" href="https://github.com/w3c/IntersectionObserver" >可以使用polyfill处理<i class="fas fa-external-link-alt"></i></a>)；API是异步的，不随着目标元素的滚动同步触发。规格写明，IntersectionObserver的实现，应该采用requestIdleCallback()，即只有线程空闲下来，才会执行观察器。这意味着，这个观察器的优先级非常低，只在其他任务执行完，浏览器有了空闲才会执行。</li>
+</ul>
+</li>
+</ol>
+<p>这里我采用了scroll方式进行实现，理由是：因为IntersectionObserver是异步的，在设计时考虑到要处理防抖节流问题，使用scroll更容易实现。<strong>核心思路及是通过事件监听然后执行检测元素是否可见的方法最后执行任务</strong>。这里提到了防抖和节流，在长列表中用户快速滑动时，视图直接划过用户并没有查看，使用防抖和节流可以有效的改善性能，这里简单解释一下防抖和节流的区别</p>
+<ul>
+<li>防抖：在规定时间内多次触发时只执行最后一次</li>
+<li>节流：在规定时间内多次触发时只执行某几次</li>
+</ul>
+<p>防抖和节流都是为了限制函数的执行频率，以优化函数触发频率过高导致的响应速度跟不上，延迟假死或卡顿的现象</p>
+<p>防抖函数:原理是维护一个计时器,在规定时间后执行回调.若在此期间再次触发,则重新开始计时</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">debounceFunc</span>(<span class="params">fn: <span class="built_in">any</span>, wait: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="attr">timer</span>:<span class="built_in">any</span> = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">let</span> args = <span class="variable language_">arguments</span>;</span><br><span class="line"></span><br><span class="line">        timer &amp;&amp; <span class="built_in">clearTimeout</span>(timer);</span><br><span class="line"></span><br><span class="line">        timer = <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">            <span class="comment">//@ts-ignore</span></span><br><span class="line">            fn.<span class="title function_">apply</span>(<span class="variable language_">this</span>, args)</span><br><span class="line">        &#125;, wait);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>节流函数:原理是判断是否达到规定时间，到达时则执行回调</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">throttleFunc</span>(<span class="params">fn: <span class="built_in">any</span>, wait: <span class="built_in">number</span></span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> time = <span class="number">0</span>, <span class="attr">timer</span>:<span class="built_in">any</span> = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">        <span class="keyword">let</span> now = <span class="title class_">Date</span>.<span class="title function_">now</span>();</span><br><span class="line">        <span class="keyword">let</span> args = <span class="variable language_">arguments</span>;</span><br><span class="line">        <span class="keyword">if</span> (now - time &gt; wait) &#123;</span><br><span class="line">            <span class="comment">//@ts-ignore</span></span><br><span class="line">            fn.<span class="title function_">apply</span>(<span class="variable language_">this</span>, args);</span><br><span class="line">            time = now;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            timer &amp;&amp; <span class="built_in">clearTimeout</span>(timer);</span><br><span class="line">            timer = <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">                <span class="comment">//@ts-ignore</span></span><br><span class="line">                fn.<span class="title function_">apply</span>(<span class="variable language_">this</span>, args);</span><br><span class="line">                time = now;</span><br><span class="line">            &#125;, wait);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="核心内容"><a href="#核心内容" class="headerlink" title="核心内容"></a>核心内容</h3><p>上面讲到懒加载核心在于检测元素是否可见，检测元素是否可见及判断dom是位置是否在可视区内，主要通过top, left来判断，我们可以使用getBoundingClientRect方法来获取dom的具体信息。这里先尝试使用js来实现一个checkVisible函数。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个函数，参数为要检查的dom和滚动容器dom。返回boolean</span></span><br><span class="line"><span class="keyword">const</span> checkVisible = (<span class="attr">dom</span>: <span class="title class_">HTMLElement</span>, <span class="attr">parentDom</span>: <span class="title class_">HTMLElement</span>): <span class="function"><span class="params">boolean</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 获取dom的信息</span></span><br><span class="line">    <span class="keyword">const</span> &#123; top, left, width, height &#125; = dom.<span class="title function_">getBoundingClientRect</span>();</span><br><span class="line">    <span class="keyword">const</span> &#123;</span><br><span class="line">        <span class="attr">top</span>: parentTop,</span><br><span class="line">        <span class="attr">left</span>: parentLeft,</span><br><span class="line">        <span class="attr">width</span>: parentWidth,</span><br><span class="line">        <span class="attr">height</span>: parentHeight</span><br><span class="line">    &#125; = parentDom.<span class="title function_">getBoundingClientRect</span>();</span><br><span class="line">    <span class="comment">// 获取屏幕的宽高</span></span><br><span class="line">    <span class="keyword">const</span> windowInnerHeight = <span class="variable language_">window</span>.<span class="property">innerHeight</span> || <span class="variable language_">document</span>.<span class="property">documentElement</span>.<span class="property">clientHeight</span>;</span><br><span class="line">    <span class="keyword">const</span> windowInnerWidth = <span class="variable language_">window</span>.<span class="property">innerWidth</span> || <span class="variable language_">document</span>.<span class="property">documentElement</span>.<span class="property">clientWidth</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">const</span> intersectionTop = <span class="title class_">Math</span>.<span class="title function_">min</span>(parentTop, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">const</span> intersectionLeft = <span class="title class_">Math</span>.<span class="title function_">min</span>(parentLeft, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">// 计算可视区高度和宽度，因为parentDom可能比屏幕大，这里最大取window得宽高</span></span><br><span class="line">    <span class="keyword">const</span> intersectionHeight = <span class="title class_">Math</span>.<span class="title function_">min</span>(windowInnerHeight, parentTop + parentHeight) - intersectionTop;</span><br><span class="line">    <span class="keyword">const</span> intersectionWidth = <span class="title class_">Math</span>.<span class="title function_">min</span>(windowInnerWidth, parentLeft + parentWidth) - intersectionLeft;</span><br><span class="line">    <span class="comment">// 计算要检查的dom距离parentDom的距离</span></span><br><span class="line">    <span class="keyword">const</span> offsetTop = top - intersectionTop;</span><br><span class="line">    <span class="keyword">const</span> offsetLeft = left - intersectionLeft;</span><br><span class="line">    <span class="comment">// 进行比较</span></span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        offsetTop &lt;= intersectionHeight &amp;&amp;</span><br><span class="line">        offsetTop + height &gt;= <span class="number">0</span> &amp;&amp;</span><br><span class="line">        offsetLeft &lt;= intersectionWidth &amp;&amp;</span><br><span class="line">        offsetLeft + width &gt;= <span class="number">0</span></span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>完成了核心的函数后，这里我们开始把转化成react的方式</p>
+<h3 id="API设计"><a href="#API设计" class="headerlink" title="API设计"></a>API设计</h3><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+<th>类型</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>children</td>
+<td>必选，懒加载组件</td>
+<td>React.ReactNode</td>
+<td>-</td>
+</tr>
+<tr>
+<td>loading</td>
+<td>必选，占位组件</td>
+<td>React.ReactNode</td>
+<td>-</td>
+</tr>
+<tr>
+<td>scrollContainer</td>
+<td>可选，滚动容器</td>
+<td>string&#x2F;dom</td>
+<td>document.body</td>
+</tr>
+<tr>
+<td>offset</td>
+<td>可选，偏移量</td>
+<td>number&#x2F;Array(number)</td>
+<td>0</td>
+</tr>
+<tr>
+<td>resize</td>
+<td>可选，是否监听resize事件</td>
+<td>boolean</td>
+<td>false</td>
+</tr>
+<tr>
+<td>debounce</td>
+<td>可选，防抖时间，优先级高于节流</td>
+<td>number</td>
+<td>0</td>
+</tr>
+<tr>
+<td>throttle</td>
+<td>可选，节流时间，优先级低于防抖</td>
+<td>number</td>
+<td>0</td>
+</tr>
+</tbody></table>
+<h3 id="源码解析"><a href="#源码解析" class="headerlink" title="源码解析"></a>源码解析</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">React</span>, &#123; useState, useRef, useEffect &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="comment">// 定义组件Props</span></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">LazyloadProps</span> &#123;    </span><br><span class="line">    <span class="attr">loading</span>: <span class="title class_">React</span>.<span class="property">ReactNode</span>;</span><br><span class="line">    scrollContainer?: <span class="title class_">HTMLElement</span>;</span><br><span class="line">    offset?: <span class="built_in">number</span>;</span><br><span class="line">    resize?: <span class="built_in">boolean</span>;</span><br><span class="line">    debounce?: <span class="built_in">number</span>;</span><br><span class="line">    throttle?: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 需要监听的事件</span></span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">DEFAULT_EVENTS</span> = [</span><br><span class="line">    <span class="string">&#x27;scroll&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;wheel&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;mousewheel&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;animationend&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;transitionend&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;touchmove&#x27;</span>,</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">Lazyload</span>: <span class="title class_">React</span>.<span class="property">FC</span>&lt;<span class="title class_">LazyloadProps</span>&gt; = <span class="function">(<span class="params">props</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 设置Props默认值</span></span><br><span class="line">    <span class="keyword">const</span> &#123;</span><br><span class="line">        children,</span><br><span class="line">        loading,</span><br><span class="line">        scrollContainer = <span class="variable language_">document</span>.<span class="property">body</span>,</span><br><span class="line">        offset = <span class="number">0</span>,</span><br><span class="line">        debounce = <span class="number">0</span>,</span><br><span class="line">        throttle = <span class="number">0</span>,</span><br><span class="line">        resize = <span class="literal">false</span></span><br><span class="line">    &#125; = props;</span><br><span class="line">    <span class="comment">// 是否可见</span></span><br><span class="line">    <span class="keyword">const</span> [isVisible, setVisible] = <span class="title function_">useState</span>(<span class="literal">false</span>);</span><br><span class="line">    <span class="comment">// 包裹容器</span></span><br><span class="line">    <span class="keyword">const</span> containerRef = useRef&lt;<span class="title class_">HTMLDivElement</span>&gt;(<span class="literal">null</span>)</span><br><span class="line"></span><br><span class="line">    <span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    	<span class="comment">// 检查函数</span></span><br><span class="line">        <span class="keyword">let</span> <span class="title function_">checkVisible</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">            <span class="comment">// 如果容器不存在则不计算</span></span><br><span class="line">            <span class="keyword">if</span> (!containerRef.<span class="property">current</span>) <span class="keyword">return</span>;</span><br><span class="line">            <span class="comment">// 获取当前组件位置</span></span><br><span class="line">            <span class="keyword">const</span> &#123; top, left, width, height &#125; = containerRef.<span class="property">current</span>?.<span class="title function_">getBoundingClientRect</span>();</span><br><span class="line">            <span class="comment">// 获取滚动容器位置</span></span><br><span class="line">            <span class="keyword">const</span> &#123;</span><br><span class="line">                <span class="attr">top</span>: parentTop,</span><br><span class="line">                <span class="attr">left</span>: parentLeft,</span><br><span class="line">                <span class="attr">width</span>: parentWidth,</span><br><span class="line">                <span class="attr">height</span>: parentHeight</span><br><span class="line">            &#125; = scrollContainer.<span class="title function_">getBoundingClientRect</span>();</span><br><span class="line">            <span class="comment">// 计算屏幕高度和宽度</span></span><br><span class="line">            <span class="keyword">const</span> windowInnerHeight = <span class="variable language_">window</span>.<span class="property">innerHeight</span> || <span class="variable language_">document</span>.<span class="property">documentElement</span>.<span class="property">clientHeight</span>;</span><br><span class="line">            <span class="keyword">const</span> windowInnerWidth = <span class="variable language_">window</span>.<span class="property">innerWidth</span> || <span class="variable language_">document</span>.<span class="property">documentElement</span>.<span class="property">clientWidth</span>;</span><br><span class="line">            <span class="comment">// 计算滚动容器和屏幕可视区的相交区域</span></span><br><span class="line">            <span class="keyword">const</span> intersectionTop = <span class="title class_">Math</span>.<span class="title function_">min</span>(parentTop, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">const</span> intersectionLeft = <span class="title class_">Math</span>.<span class="title function_">min</span>(parentLeft, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">const</span> intersectionHeight = <span class="title class_">Math</span>.<span class="title function_">min</span>(windowInnerHeight, parentTop + parentHeight) - intersectionTop;</span><br><span class="line">            <span class="keyword">const</span> intersectionWidth = <span class="title class_">Math</span>.<span class="title function_">min</span>(windowInnerWidth, parentLeft + parentWidth) - intersectionLeft;</span><br><span class="line">            <span class="comment">// 计算组件距离可视区的高度</span></span><br><span class="line">            <span class="keyword">const</span> offsetTop = top - intersectionTop;</span><br><span class="line">            <span class="keyword">const</span> offsetLeft = left - intersectionLeft;</span><br><span class="line">            <span class="comment">// 偏移量计算[top, left]</span></span><br><span class="line">            <span class="keyword">const</span> offsets = <span class="title class_">Array</span>.<span class="title function_">isArray</span>(offset) ? offset : [offset, offset];</span><br><span class="line">            <span class="comment">// 通过上述距离判断组件是否在可见区域</span></span><br><span class="line">            <span class="keyword">const</span> isVisible = offsetTop - offsets[<span class="number">0</span>] &lt;= intersectionHeight &amp;&amp;</span><br><span class="line">            offsetTop + height + offsets[<span class="number">0</span>] &gt;= <span class="number">0</span> &amp;&amp;</span><br><span class="line">            offsetLeft - offsets[<span class="number">1</span>] &lt;= intersectionWidth &amp;&amp;</span><br><span class="line">            offsetLeft + width + offsets[<span class="number">1</span>] &gt;= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">            <span class="title function_">setVisible</span>(isVisible);</span><br><span class="line">            <span class="comment">// 如果可见取消当前组件的所有的监听</span></span><br><span class="line">            <span class="keyword">if</span> (isVisible) &#123;</span><br><span class="line">                <span class="variable constant_">DEFAULT_EVENTS</span>.<span class="title function_">forEach</span>(<span class="function">(<span class="params">event</span>) =&gt;</span> &#123;</span><br><span class="line">                    scrollContainer?.<span class="title function_">removeEventListener</span>(event, checkVisible);</span><br><span class="line">                &#125;);</span><br><span class="line">                <span class="variable language_">window</span>.<span class="title function_">removeEventListener</span>(<span class="string">&#x27;resize&#x27;</span>, checkVisible);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 使用防抖节流增强checkVisbile函数，这里优先防抖，其次节流</span></span><br><span class="line">        <span class="keyword">if</span> (debounce) &#123;</span><br><span class="line">            <span class="comment">// 防抖函数</span></span><br><span class="line">            checkVisible = <span class="title function_">debounceFunc</span>(checkVisible, debounce);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (throttle) &#123;</span><br><span class="line">            <span class="comment">// 节流函数</span></span><br><span class="line">            checkVisible = <span class="title function_">throttleFunc</span>(checkVisible, throttle);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 批量监听事件</span></span><br><span class="line">        <span class="variable constant_">DEFAULT_EVENTS</span>.<span class="title function_">forEach</span>(<span class="function">(<span class="params">event</span>) =&gt;</span> &#123;</span><br><span class="line">            scrollContainer?.<span class="title function_">addEventListener</span>(event, checkVisible);</span><br><span class="line">        &#125;);</span><br><span class="line">		</span><br><span class="line">        <span class="keyword">if</span> (resize) &#123;</span><br><span class="line">            <span class="variable language_">window</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;resize&#x27;</span>, checkVisible);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 自动执行一次</span></span><br><span class="line">        <span class="title function_">checkVisible</span>();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="function">() =&gt;</span> &#123;</span><br><span class="line">            <span class="variable constant_">DEFAULT_EVENTS</span>.<span class="title function_">forEach</span>(<span class="function">(<span class="params">event</span>) =&gt;</span> &#123;</span><br><span class="line">                scrollContainer?.<span class="title function_">removeEventListener</span>(event, checkVisible);</span><br><span class="line">            &#125;)</span><br><span class="line">            <span class="variable language_">window</span>.<span class="title function_">removeEventListener</span>(<span class="string">&#x27;resize&#x27;</span>, checkVisible);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, [scrollContainer, containerRef.<span class="property">current</span>])</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">ref</span>=<span class="string">&#123;containerRef&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            &#123; isVisible ? children : loading &#125;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">    )</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h3><blockquote>
+<p>npm install @lumu&#x2F;lazyload –save</p>
+</blockquote>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">React</span> <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Lazyload</span> <span class="keyword">from</span> <span class="string">&#x27;@lumu/lazyload&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">Loading</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="language-xml"><span class="tag">&lt;<span class="name">img</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">            <span class="attr">className</span>=<span class="string">&quot;test&quot;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">            <span class="attr">alt</span>=<span class="string">&quot;&quot;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">            <span class="attr">src</span>=<span class="string">&#123;require(</span>&#x27;<span class="attr">.</span>/<span class="attr">loading.gif</span>&#x27;)&#125; /&gt;</span></span></span><br><span class="line">    )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">App</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="language-xml"><span class="tag">&lt;<span class="name">React.Fragment</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            &#123;</span></span><br><span class="line"><span class="language-xml">                new Array(10).fill(1).map((_, index) =&gt; (</span></span><br><span class="line"><span class="language-xml">                    <span class="tag">&lt;<span class="name">Lazyload</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">                        <span class="attr">resize</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">                        <span class="attr">scrollContainer</span>=<span class="string">&#123;document.getElementById(</span>&#x27;<span class="attr">root</span>&#x27;) <span class="attr">as</span> <span class="attr">HTMLDivElement</span>&#125;</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">                        <span class="attr">debounce</span>=<span class="string">&#123;300&#125;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">                        <span class="attr">offset</span>=<span class="string">&#123;50&#125;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">                        <span class="attr">loading</span>=<span class="string">&#123;</span>&lt;<span class="attr">Loading</span>/&gt;</span>&#125;</span></span><br><span class="line"><span class="language-xml">                        key=&#123;index&#125;&gt;</span></span><br><span class="line"><span class="language-xml">                        <span class="tag">&lt;<span class="name">img</span> <span class="attr">alt</span>=<span class="string">&quot;&quot;</span> <span class="attr">src</span>=<span class="string">&quot;https://img01.yzcdn.cn/vant/apple-1.jpg&quot;</span> <span class="attr">width</span>=<span class="string">&quot;100%&quot;</span> <span class="attr">height</span>=<span class="string">&quot;300&quot;</span>/&gt;</span>    </span></span><br><span class="line"><span class="language-xml">                    <span class="tag">&lt;/<span class="name">Lazyload</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">                ))</span></span><br><span class="line"><span class="language-xml">            &#125;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">React.Fragment</span>&gt;</span></span></span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a class="link"   target="_blank" rel="noopener" href="https://github.com/wenlei0617/lumu-lazyload" >源码地址<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="http://49.235.254.79/lumu-lazyload" >示例演示<i class="fas fa-external-link-alt"></i></a></p>
+<h3 id="往期回顾"><a href="#往期回顾" class="headerlink" title="往期回顾"></a>往期回顾</h3><ul>
+<li><a class="link"   target="_blank" rel="noopener" href="https://juejin.cn/post/6925239227999322119" >逐步拆解React组件–Swipe轮播图<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><blockquote>
+<p>觉得有用？喜欢就收藏，顺便点个赞吧，你的支持是我最大的鼓励！觉得没用？评论区交流您的想法，虚心接受您的指导。</p>
+</blockquote>
+
+        </div>
+
+        
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/blog/2021/03/25/%E5%85%B3%E4%BA%8E%E5%8A%A0%E8%BD%BD%E7%8A%B6%E6%80%81%E7%9A%84%E6%80%9D%E8%80%83%E5%92%8C%E5%B0%9D%E8%AF%95/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">关于加载状态的思考和尝试</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/blog/2021/02/14/%E9%80%90%E6%AD%A5%E6%8B%86%E8%A7%A3React%E7%BB%84%E4%BB%B6%E2%80%94Swipe%E8%BD%AE%E6%92%AD%E5%9B%BE/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">逐步拆解React组件—Swipe轮播图</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">Gary</a>
+        </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/blog/js/utils.js"></script>
+
+<script src="/blog/js/main.js"></script>
+
+<script src="/blog/js/header-shrink.js"></script>
+
+<script src="/blog/js/back2top.js"></script>
+
+<script src="/blog/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>

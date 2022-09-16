@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="前端">
+    <meta name="author" content="Gary">
+    
+    <title>
+        
+            Node+Puppeteer+可视化配置海报业务尝试 |
+        
+        随记
+    </title>
+    
+<link rel="stylesheet" href="/blog/css/style.css">
+
+    <link rel="shortcut icon" href="/blog/images/logo.svg">
+    
+<link rel="stylesheet" href="/blog/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"wenlei0617.github.io","root":"/blog/","language":"zh-CN"};
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/blog/images/bg.svg","description":"心怀热爱，奔赴山海，看云卷云舒，望潮起潮落"},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                随记
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/archives">归档</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">Node+Puppeteer+可视化配置海报业务尝试</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/blog/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">Gary</span>
+                        
+                            <span class="author-label">Lv2</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2021-05-08 18:17:02</span>
+        <span class="mobile">2021-05-08 18:17</span>
+    </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在推广业务中，常常会遇到合成带二维码海报分享功能，并且为了推广力度，需要同时在APP、WEB、小程序都有此功能加大曝光，各端都需要单独编写，复用能力差，效率低。本身合成海报业务并无难度，在此背景下为了提高效率开发了lumu-poster海报合成工具(技术栈：nestjs + react + mysql)</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>在现有社区中针对海报生成本身已经有很多成熟方案，如下：</p>
+<ol>
+<li>html2canvas&#x2F;canvas插件截图 </li>
+<li>服务器(java，node等)绘制 </li>
+<li>服务器使用puppeteer无头浏览器生成</li>
+</ol>
+<h3 id="html2canvas-x2F-canvas绘制截图"><a href="#html2canvas-x2F-canvas绘制截图" class="headerlink" title="html2canvas&#x2F;canvas绘制截图"></a>html2canvas&#x2F;canvas绘制截图</h3><ul>
+<li>优势：在于完全解放服务器，由前端独立生成，定制化样式强。</li>
+<li>缺点：部分手机兼容性不足，跨端复用能力不足，性能依靠手机自身</li>
+</ul>
+<h3 id="服务器插件绘制"><a href="#服务器插件绘制" class="headerlink" title="服务器插件绘制"></a>服务器插件绘制</h3><ul>
+<li>优势：在于不需要前端处理，跨端复用能力强，性能优。</li>
+<li>缺点：定制化样式能力不足，编码相对复杂</li>
+</ul>
+<h3 id="服务器使用puppeteer生成"><a href="#服务器使用puppeteer生成" class="headerlink" title="服务器使用puppeteer生成"></a>服务器使用puppeteer生成</h3><ul>
+<li>优势：个性定制化强，复用能力强。</li>
+<li>缺点：性能上限不足</li>
+</ul>
+<p>因为本身我们海报不仅仅是图片，还会有表格，长图等偏个性化的内容，所以看重个性化扩展和跨端复用能力，对比上述方案最终选择使用puppeteer生成。</p>
+<h2 id="puppeteer痛点"><a href="#puppeteer痛点" class="headerlink" title="puppeteer痛点"></a>puppeteer痛点</h2><p>社区本身有很多关于puppeteer生成图片的方案和文章，但其中发现了几个问题</p>
+<ol>
+<li>社区中使用puppeteer常用url访问页面然后生成图片，这样会导致每个合成的图片都需要前端去做一个页面并且对接动态数据，相当于把工作量全部放在前端。</li>
+<li>现有海报方案里，都是通过page.goto方式进行网络页面加载，需要前端每个海报都创建页面，测试，部署，发布；流程复杂且无法解放前端。响应速度则特别依赖页面资源加载和网络状态。前后端分离情况，页面需要请求后台动态加载内容基本在800ms-1500ms左右，采用服务端渲染页面简单的截图页基本上优化到400-500ms的情况，即便如此加之其他业务处理，接口响应基本在800ms左右。</li>
+<li>puppeteer在每开一个tab页面及需要大约30M内存，并且同时多开tab执行业务会导致cpu负载，这个则决定了puppeteer的单机上限，代码上优化程度有限。</li>
+</ol>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>针对上述3个痛点，我是如何解决这些问题呢？</p>
+<h3 id="关于痛点1"><a href="#关于痛点1" class="headerlink" title="关于痛点1"></a>关于痛点1</h3><p>主要是需要解放前端双手，本身海报业务并不复杂，一般是图片(背景图，头像，二维码等)，文字，表格等这些简单的元素。这种简单特定业务即可使用可视化方式进行生成，这里我选用了React作为UI框架，通过自定义json scheam作为数据存储格式，动态渲染页面。在设计可视化中内在核心是：组件编排和表单编排。</p>
+<h4 id="组件编排"><a href="#组件编排" class="headerlink" title="组件编排"></a>组件编排</h4><p>在设计组件编排时考虑到可视化在其他项目都有可用性，这里使用了插件化的方式为组件赋能，及组件本身只有渲染能力，如果需要给组件扩展能力，及使用高阶组件的方式进行注入，这里布局统一使用了绝对布局，使用moveable插件进行二次封装成一个高阶组件来实现拖拽。</p>
+<div align="center">
+<img width="700px" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/cc697e358b6846e59020dc4e52faa732~tplv-k3u1fbpfcp-watermark.image"/>
+</div>
+
+<p>基础组件的json scheam定义，所有组件需要在此ComponentSchema上进行继承</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 组件类型</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">type</span> <span class="title class_">ComponentTypes</span> = <span class="string">&#x27;TEXT&#x27;</span> | <span class="string">&#x27;PICTURE&#x27;</span> | <span class="string">&#x27;CANVAS&#x27;</span>; </span><br><span class="line"><span class="comment">// 组件配置</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> <span class="title class_">ComponentSchema</span> &#123;</span><br><span class="line">    <span class="comment">/** 服务器唯一id */</span></span><br><span class="line">    <span class="attr">id</span>: <span class="built_in">string</span>;</span><br><span class="line">    <span class="comment">/** 节点名称 */</span></span><br><span class="line">    <span class="attr">nodeName</span>: <span class="built_in">string</span>;</span><br><span class="line">    <span class="comment">/** 组件类型 */</span></span><br><span class="line">    <span class="attr">name</span>: <span class="title class_">ComponentTypes</span>;</span><br><span class="line">    <span class="comment">/** 组件外层挂载id */</span></span><br><span class="line">    <span class="attr">domId</span>: <span class="built_in">string</span>;</span><br><span class="line">    <span class="comment">/** 组合id */</span></span><br><span class="line">    <span class="attr">groupId</span>: <span class="built_in">string</span>;</span><br><span class="line">    <span class="comment">/** 父id */</span></span><br><span class="line">    <span class="attr">parentId</span>: <span class="built_in">string</span>;</span><br><span class="line">    <span class="comment">/** 组件样式 */</span></span><br><span class="line">    <span class="attr">styles</span>: <span class="title class_">React</span>.<span class="property">CSSProperties</span>;</span><br><span class="line">    <span class="comment">/** 自定义内容 */</span></span><br><span class="line">    <span class="attr">custom</span>: <span class="built_in">unknown</span>;</span><br><span class="line">    <span class="comment">/** 子组件内容 */</span></span><br><span class="line">    children?: <span class="title class_">ComponentSchema</span>[];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>文字组件的示例</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">React</span> <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">ComponentSchema</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;../../interface&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> <span class="title class_">TextProps</span> <span class="keyword">extends</span> <span class="title class_">ComponentSchema</span> &#123;</span><br><span class="line">    <span class="attr">custom</span>: &#123;</span><br><span class="line">        <span class="attr">text</span>: <span class="built_in">string</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">Text</span>: <span class="title class_">React</span>.<span class="property">FC</span>&lt;<span class="title class_">TextProps</span>&gt; = <span class="function">(<span class="params">&#123; custom, styles, domId, groupId, children &#125;</span>) =&gt;</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="language-xml"><span class="tag">&lt;<span class="name">div</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">            <span class="attr">className</span>=<span class="string">&#123;groupId&#125;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">            <span class="attr">id</span>=<span class="string">&#123;domId&#125;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">            <span class="attr">dangerouslySetInnerHTML</span>=<span class="string">&#123;&#123;__html:</span> <span class="attr">custom.text</span>&#125;&#125;</span></span></span><br><span class="line"><span class="tag"><span class="language-xml">            <span class="attr">style</span>=<span class="string">&#123;styles&#125;</span>&gt;</span>&#123;children&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">    )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title class_">Text</span>.<span class="property">displayName</span> = <span class="string">&#x27;Text&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title class_">Text</span>;</span><br></pre></td></tr></table></figure>
+<p>然后通过组件插件系统进行组件注册，在注册的时候进行特定高阶组件注入。流程如下：<br><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/ae1cc63d9d114535bbc52e10ad3d2fab~tplv-k3u1fbpfcp-watermark.image" alt="image.png"><br>页面渲染组件</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">React</span> <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">ComponentSchema</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;./interface&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; getViewPlugin &#125; <span class="keyword">from</span> <span class="string">&#x27;./view-plugins&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">StaticViewRender</span>: <span class="title class_">React</span>.<span class="property">FC</span>&lt;&#123; <span class="attr">dataSource</span>: <span class="title class_">ComponentSchema</span>[], <span class="attr">mock</span>: <span class="built_in">boolean</span> &#125;&gt; = <span class="function">(<span class="params">&#123; dataSource, mock &#125;</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="language-xml"><span class="tag">&lt;<span class="name">React.Fragment</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">            &#123;</span></span><br><span class="line"><span class="language-xml">                dataSource.map((data) =&gt; &#123;</span></span><br><span class="line"><span class="language-xml">                    const plugin = getViewPlugin(data.name);</span></span><br><span class="line"><span class="language-xml">                    if (plugin) &#123;</span></span><br><span class="line"><span class="language-xml">                        const Component = plugin.component;</span></span><br><span class="line"><span class="language-xml">                        return (</span></span><br><span class="line"><span class="language-xml">                            <span class="tag">&lt;<span class="name">Component</span> <span class="attr">key</span>=<span class="string">&#123;data.domId&#125;</span> &#123;<span class="attr">...data</span>&#125; <span class="attr">mock</span>=<span class="string">&#123;mock&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">                                &#123; data.children &amp;&amp; <span class="tag">&lt;<span class="name">StaticViewRender</span> <span class="attr">mock</span>=<span class="string">&#123;mock&#125;</span> <span class="attr">dataSource</span>=<span class="string">&#123;data.children&#125;</span> /&gt;</span>&#125;</span></span><br><span class="line"><span class="language-xml">                            <span class="tag">&lt;/<span class="name">Component</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">                        )</span></span><br><span class="line"><span class="language-xml">                    &#125;</span></span><br><span class="line"><span class="language-xml">                    return null;</span></span><br><span class="line"><span class="language-xml">                &#125;)</span></span><br><span class="line"><span class="language-xml">            &#125;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">React.Fragment</span>&gt;</span></span></span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="表单编排"><a href="#表单编排" class="headerlink" title="表单编排"></a>表单编排</h4><p>在可视化系统中，表单主要是通过组件属性生成对应的表单，有些属性我们并不想用户编辑，所以在设计表单时，我们同样使用自定义json schema的方式定义表单并通过插件注册的方式进行注入系统，通过组件名称进行关联组件。因为antd form本身的规范化得以很容易的写出基础的动态渲染表单。因为海报本身会有动态内容，所以这里做了一个简单的字符串解析，通过规则注入动态数据。在创建海报时通过${变量}的方式告诉编辑器这里是动态数据的key,然后在渲染的时候，使用者通过url query的方式调用进行匹配。如海报完成后会生生一个url <a class="link"   target="_blank" rel="noopener" href="http://x.x.x.x/tool/screenshot?id=10&amp;clipWidth=694&amp;clipHeight=684&amp;name=&amp;headImg=&amp;code=" >http://x.x.x.x/tool/screenshot?id=10&amp;clipWidth=694&amp;clipHeight=684&amp;name=&amp;headImg=&amp;code=<i class="fas fa-external-link-alt"></i></a><br>这个url就是图片地址，其中name&#x2F;headImg&#x2F;code就是在制作海报时的动态数据key</p>
+<p>效果图：</p>
+<div align="center">
+<img width="700px" src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/a8c75335e4824224b3cd9f09a1ba22f5~tplv-k3u1fbpfcp-watermark.image"/>
+</div>
+
+<p>这样基本解放了前端，一般海报涉及4-5个元素，基本在3分钟内就可以完成海报发布。</p>
+<h3 id="关于痛点2"><a href="#关于痛点2" class="headerlink" title="关于痛点2"></a>关于痛点2</h3><p>上述可视化编辑器已经完成了页面生成，现在通过goto方式直接访问，但是发现本身系统使用react，react包本身不小且如果基础组件越来越多则打包的资源便会增加，而且现代开发方式，需要通过js读取完成后再过去当前模板的json，然后再渲染，这种方式导致渲染时间直接拖长。这里最开始想到使用动态渲染组件来减少组件的资源，但是发现本身海报业务里的组件资源并不多，主要还是react本身资源，这时候想到，本身海报渲染使用react大材小用，不如使用上一代开发方式，页面直接写在html上，完全就避免了js的渲染的性能消耗。但是如果直接写到html上，这个时候一定想到了服务端渲染，但服务端渲染需要搭建一个ssr服务，但也是没有避免加载react依赖，感觉大材小用，毕竟react和reactdom本身包也不小，其实就是渲染html，感觉通过react vue都有点大材小用，这时候发现puppeteer中的setContent这个api可以直接注入html进行页面渲染，这样可以最大程度上规避页面网络因素，本身我们海报也不需要js，css。感觉方案很棒，那如何方便的注入html呢？其实我们在做可视化的时候已经就有html，只是没有动态内容，那在完成时通过规则直接把html存入数据库即可。通过这套规则，合成海报基本能在150ms-400ms完成，最大程度上减少了包体积和网络因素。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Get</span>(<span class="string">&#x27;/updateScreenshot&#x27;</span>)</span><br><span class="line"><span class="keyword">async</span> <span class="title function_">updateScreenshot</span>(<span class="params"></span></span><br><span class="line"><span class="params">  <span class="meta">@Res</span>() res: Response,</span></span><br><span class="line"><span class="params">  <span class="meta">@Query</span>() query: &#123;</span></span><br><span class="line"><span class="params">    id: <span class="built_in">string</span>,</span></span><br><span class="line"><span class="params">    clipWidth: <span class="built_in">string</span>,</span></span><br><span class="line"><span class="params">    clipHeight: <span class="built_in">string</span>,</span></span><br><span class="line"><span class="params">    clipType?: <span class="string">&#x27;png&#x27;</span> | <span class="string">&#x27;jpeg&#x27;</span>,</span></span><br><span class="line"><span class="params">    clipScale?: <span class="built_in">string</span>,</span></span><br><span class="line"><span class="params">    [key: <span class="built_in">string</span>]: <span class="built_in">string</span></span></span><br><span class="line"><span class="params">  &#125;</span></span><br><span class="line"><span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; id, clipWidth, clipHeight, clipScale = <span class="number">1</span>, clipType = <span class="string">&#x27;png&#x27;</span>, ...params &#125; = query;</span><br><span class="line">  <span class="keyword">const</span> pictureInfo = <span class="keyword">await</span> <span class="variable language_">this</span>.<span class="property">pictureService</span>.<span class="title function_">findById</span>(+id);</span><br><span class="line">  <span class="comment">// 通过解析自定义规则注入真实数据</span></span><br><span class="line">  <span class="keyword">const</span> html = <span class="title function_">renderStr</span>(pictureInfo.<span class="property">html</span>, params);</span><br><span class="line">  <span class="keyword">const</span> buffer = <span class="keyword">await</span> pool.<span class="title function_">use</span>(<span class="keyword">async</span> (<span class="attr">page</span>: puppeteer.<span class="property">Page</span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">await</span> page.<span class="title function_">setContent</span>(html);</span><br><span class="line">    <span class="keyword">const</span> buffer = <span class="keyword">await</span> page.<span class="title function_">screenshot</span>(&#123;</span><br><span class="line">      <span class="attr">type</span>: clipType,</span><br><span class="line">      <span class="attr">encoding</span>: <span class="string">&#x27;binary&#x27;</span>,</span><br><span class="line">      <span class="attr">clip</span>: &#123;</span><br><span class="line">        <span class="attr">x</span>: <span class="number">0</span>,</span><br><span class="line">        <span class="attr">y</span>: <span class="number">0</span>,</span><br><span class="line">        <span class="attr">width</span>: +clipWidth,</span><br><span class="line">        <span class="attr">height</span>: +clipHeight</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;) <span class="keyword">as</span> <span class="title class_">Buffer</span>;</span><br><span class="line">    <span class="keyword">return</span> buffer;</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  res.<span class="title function_">setHeader</span>(<span class="string">&#x27;Content-Type&#x27;</span>, <span class="string">&#x27;image/png&#x27;</span>);</span><br><span class="line">  res.<span class="title function_">setHeader</span>(<span class="string">&#x27;Content-Length&#x27;</span>, buffer.<span class="property">length</span>);</span><br><span class="line">  res.<span class="title function_">status</span>(<span class="number">200</span>).<span class="title function_">send</span>(buffer);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">renderStr</span> = (<span class="params">str:<span class="built_in">string</span>, context: <span class="built_in">object</span> = &#123;&#125;</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> tokenReg = <span class="regexp">/\$(\\)?\&#123;([^\&#123;\&#125;\\]+)(\\)?\&#125;/g</span>;</span><br><span class="line">  <span class="comment">//@ts-ignore</span></span><br><span class="line">  <span class="keyword">return</span> str.<span class="title function_">replace</span>(tokenReg, <span class="function">(<span class="params">word, slash1, token, slash2</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (slash1 || slash2) &#123;</span><br><span class="line">      <span class="keyword">return</span> word.<span class="title function_">replace</span>(<span class="string">&#x27;\\&#x27;</span>, <span class="string">&#x27;&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> variables = token.<span class="title function_">replace</span>(<span class="regexp">/\s/g</span>, <span class="string">&#x27;&#x27;</span>).<span class="title function_">split</span>(<span class="string">&#x27;.&#x27;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="attr">currentObject</span>: <span class="built_in">object</span> = context;</span><br><span class="line">    <span class="keyword">let</span> i, length, variable;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>, length = variables.<span class="property">length</span>, variable = variables[i]; i &lt; length; ++i) &#123;</span><br><span class="line">      <span class="comment">//@ts-ignore</span></span><br><span class="line">      currentObject = currentObject[variable];</span><br><span class="line">      <span class="keyword">if</span> (currentObject === <span class="literal">undefined</span> || currentObject === <span class="literal">null</span>) <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> currentObject;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="关于痛点3"><a href="#关于痛点3" class="headerlink" title="关于痛点3"></a>关于痛点3</h3><p>暂时没有特别好的解决方案，可以使用serverless或者在高并发下我们使用队列的方式来平滑输出。</p>
+<h2 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">graph TD</span><br><span class="line">可视化拖拽生成页面 --&gt; 根据页面保存html等其他信息 --&gt; 服务器根据query参数和获取对应模板html进行解析注入数据 --&gt; 通过setContent注入puppeteer再截图返回给用户</span><br></pre></td></tr></table></figure>
+
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>已经做过2个NoCode编辑器，发现NoCode并不能做到大而全，反之都是针对特定场景或者细分领域的，只有在这些场景下，前端交互相对简单，才能够沉淀出足够多的组件。不管哪种场景底层都需要依靠组件编排和表单编排，针对这2类的开发就变得尤为重要，希望结识更多对NoCode&#x2F;LowCode&#x2F;ProCode感兴趣的朋友相互交流。</p>
+<p>附：还可以更近一步，通过上传psd文件解析成组件，这样连拖拉拽都可以直接省掉，达到秒级生成海报。</p>
+
+        </div>
+
+        
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/blog/2021/07/01/%E5%85%B3%E4%BA%8EReact%E7%9A%84Key%E5%AF%BC%E8%87%B4%E7%9A%84bug%E6%80%BB%E7%BB%93/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">关于React的Key导致的bug总结</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/blog/2021/03/25/%E5%85%B3%E4%BA%8E%E5%8A%A0%E8%BD%BD%E7%8A%B6%E6%80%81%E7%9A%84%E6%80%9D%E8%80%83%E5%92%8C%E5%B0%9D%E8%AF%95/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">关于加载状态的思考和尝试</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">Gary</a>
+        </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/blog/js/utils.js"></script>
+
+<script src="/blog/js/main.js"></script>
+
+<script src="/blog/js/header-shrink.js"></script>
+
+<script src="/blog/js/back2top.js"></script>
+
+<script src="/blog/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>
