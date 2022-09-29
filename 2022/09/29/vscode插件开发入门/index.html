@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="前端">
+    <meta name="author" content="Gary">
+    
+    <title>
+        
+            vscode插件开发入门 |
+        
+        随记
+    </title>
+    
+<link rel="stylesheet" href="/blog/css/style.css">
+
+    <link rel="shortcut icon" href="/blog/images/logo.svg">
+    
+<link rel="stylesheet" href="/blog/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"wenlei0617.github.io","root":"/blog/","language":"zh-CN"};
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/blog/images/bg.svg","description":"心怀热爱，奔赴山海，看云卷云舒，望潮起潮落"},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                随记
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/blog/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/blog/archives">归档</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">vscode插件开发入门</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/blog/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">Gary</span>
+                        
+                            <span class="author-label">Lv2</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-09-29 17:44:00</span>
+        <span class="mobile">2022-09-29 17:44</span>
+    </span>
+    
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <blockquote>
+<p>导读：如果你是一名vscode使用者，一定会安装了很多插件来为平时开发进行提效，是否有时候发现插件并不能满足自身的需求，此时就需要自己开发一款插件来完成的诉求。本篇文章通过简单的插件开发为你拉开序幕，让你从中了解插件开发流程和插件本身能力范围。</p>
+</blockquote>
+<h2 id="vscode插件能做什么"><a href="#vscode插件能做什么" class="headerlink" title="vscode插件能做什么"></a>vscode插件能做什么</h2><p>在我们日常使用中，会安装很多插件，如： 主题、Prettier、code snippets、Eslint、Jest Runner、Git等等。每种插件都能解决我们实际开发中的某一块诉求。我把所有的插件大致归为三类：UX&#x2F;UI类、语言类、工具类</p>
+<h3 id="UX-x2F-UI类（主题插件、预览插件等）"><a href="#UX-x2F-UI类（主题插件、预览插件等）" class="headerlink" title="UX&#x2F;UI类（主题插件、预览插件等）"></a>UX&#x2F;UI类（主题插件、预览插件等）</h3><p>UX类插件主要用于增强用户交互行为，通过新增工作台、扩展工作台或对工作台添加自定义组件和视图。主要集中在以下的更改：</p>
+<ul>
+<li>自定义上下文菜单操作，如：平时我们右键的菜单栏</li>
+<li>在侧边栏创建自定义交互，如：npm插件安装后在资源管理中-主侧边栏添加了一个npm操作视图</li>
+<li>定义一个新的活动栏视图，如：Git插件安装后左侧活动栏中的图标</li>
+<li>在状态栏中显示自定义信息，如：Git插件安装后显示当前分支</li>
+<li>使用webview自定义内容，如：markdown预览插件提供预览的视图</li>
+</ul>
+<p>UI类插件主要用于更改vscode的外观也就是我们常说的主题，主要集中在以下3种外观的更改：</p>
+<ul>
+<li>更改原代码的颜色</li>
+<li>更改vscode ui的颜色</li>
+<li>添加自定义文件图标</li>
+</ul>
+<h3 id="语言类（Eslint、代码提示诊断功能插件等）"><a href="#语言类（Eslint、代码提示诊断功能插件等）" class="headerlink" title="语言类（Eslint、代码提示诊断功能插件等）"></a>语言类（Eslint、代码提示诊断功能插件等）</h3><p>语言扩展（例如：悬停、转到定义、诊断错误等等），我们常见的就是eslint、prettier这类插件，该类插件通过对特定语言进行能力扩展，比如：</p>
+<ul>
+<li>添加悬停、转到定义功能</li>
+<li>诊断代码错误</li>
+<li>自定义格式化代码功能</li>
+<li>自定义语言添加折叠、面包屑和大纲功能</li>
+</ul>
+<h3 id="工具类（Code-Snippets、git插件、Docker插件）"><a href="#工具类（Code-Snippets、git插件、Docker插件）" class="headerlink" title="工具类（Code Snippets、git插件、Docker插件）"></a>工具类（Code Snippets、git插件、Docker插件）</h3><p>声明性语言功能（为语言添加基本的文本编辑支持），我们常用的就是各种语言或框架的Code Snippets，通过这些插件我们能直接一些模板代码片段提示开发效率，该类插件还可以提供以下功能：</p>
+<ul>
+<li>自定义代码片段</li>
+<li>自定义编程语言</li>
+<li>添加或替换编程语言的语法</li>
+<li>扩展现有的语法</li>
+</ul>
+<p>纯工具类主要是一些第三方工具集成到vscode中，如常用的git插件、Docker插件，一般这类插件通过新增容器和视图的方式对vscode进行扩展。</p>
+<h2 id="布局解析"><a href="#布局解析" class="headerlink" title="布局解析"></a>布局解析</h2><p>了解完vscode插件的扩展范围，我们再了解一下整个vscode编辑器的布局设计和概念，这样能加深对插件开发的理解。这些内容都是我们平时开发所使用到的，可能平时并没有过多的关注它在vscode中的定位，接下我们来回顾一下我们编辑器的整体布局吧</p>
+<p>简单来说，vscode插件本质就是对我们使用的vscode进行扩展，而在扩展UX层时我们会和整个编辑器中的区域打交道，在vscode中，它把整体分为了<strong>containers</strong>（图一）和<strong>items</strong>（图二）。containers可以理解为代表编辑器的某一个区域，items可以理解为代表该区域的内容。</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b224312fa2ca4977b179afbfa5ea46b3~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e1fc261db28b4f4085d6e57ba9fbf54a~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<p><strong>如图一所示containers主要包含</strong></p>
+<ul>
+<li><strong>活动栏（Activity Bar）</strong>：重要的导航入口。我们的常用的代码管理和搜索均通过该入口进入。我们可以创建View Container并提供给Activity Bar来扩展自定义导航入口。</li>
+<li><strong>主侧边栏（Primary Sidebar）</strong>：主要是展示一个或多个Views，活动栏和主侧边栏紧密耦合，点击活动栏可以打开对应的主侧边栏，该绑定关系通过package.json中的配置进行关联。</li>
+<li><strong>辅助边栏（Secondary Sidebar）</strong>：主要是对主侧边栏的辅助作用，基本与主侧边栏一致</li>
+<li><strong>编辑器区域（Editor）</strong>：我们使用的最多的区域，包含一个或多个编辑器组，可以自定义编辑器或创建Webview视图，该区域还可以对<strong>编辑器操作栏（Editor Toolbar）</strong> 进行扩展</li>
+<li><strong>控制面板（Panel）</strong>：可以在面板中的单个选项卡中查看终端、问题和输出等视图。可以扩展自定义视图容器</li>
+<li><strong>状态栏（Status Bar）</strong>：提供有关工作区的当前活动文件的上下文信息，左侧表示整个工作区的状态，右侧表示当前活动文件的状态</li>
+</ul>
+<p><strong>如图二所示items主要包含</strong></p>
+<ul>
+<li><strong>视图（View）</strong>：视图可以通过Tree View\Welcome View\Webview View的形式提供，视图的类型可以通过package.json中进行配置</li>
+<li><strong>视图工具栏（View Toolbar）</strong>：主要用于扩展特定于视图的操作按钮</li>
+<li><strong>侧边栏工具栏（Sidebar Toolbar）</strong>：主要用于扩展侧边栏的操作按钮</li>
+<li><strong>编辑器工具栏（Editor Toolbar）</strong>：主要用于扩展编辑器区域的操作按钮</li>
+<li><strong>控制面板工具栏（Panel Toolbar）</strong>：可以扩展当前选定视图的选项</li>
+<li><strong>状态栏（Status Bar Item）</strong>：主要增强状态栏，左侧状态栏表示整个工作区的状态，右侧表示当前活动文件的状态</li>
+</ul>
+<h2 id="插件创建"><a href="#插件创建" class="headerlink" title="插件创建"></a>插件创建</h2><blockquote>
+<p>通过以上信息，我们对vscode有大致轮廓的了解，现在我们就动手开发一款todolist的vscode插件，通过实践的方式去了解vscode中的一些基础api和开发的整体流程。</p>
+</blockquote>
+<p>todolist功能分解<br><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6d8ae62b13134aa28b26e9e9c6583b4f~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<p><strong>ps: <a class="link"   target="_blank" rel="noopener" href="https://github.com/wenlei0617/vscode-todolist" >可以通过源码配合内容逐步查看<i class="fas fa-external-link-alt"></i></a></strong></p>
+<p>官方提供了友好的脚手架，可以直接通过命令行全局安装脚手架</p>
+<blockquote>
+<p>npm install -g yo generator-code</p>
+</blockquote>
+<p>安装好后，进入你的工作目录，执行<code>yo code</code>，此时脚手架会提示你将会创建哪种vscode插件，此处我们直接选择New Extension，然后安装提示进行安装即可</p>
+<p><img src="https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/934eb39aaff24cdabfc4d20c16a96f84~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<p>创建完成后，我们先看看package.json。在package.json中有几个比较关键的配置，<code>activationEvents</code>表示当前插件激活的时机，当前配置<code>onCommand:todolist.helloWorld</code>表示当用户通过命令(ctrl+p)触发todolist.helloWorld命令时则激活插件。<code>contributes</code>表示当前插件会提供的功能，该配置则是对插件功能的配置注册。<code>commands</code>表示需要提供的命令，接收一个数组，<code>command</code>表示命令的唯一key（用于之后编写代码时注册命令使用）,<code>title</code>用于用户触发该命令的关键字。<code>main</code>表示插件的入口文件。<code>engines.vscode</code>表示使用该插件需要的vscode的最低版本，脚手架生成后默认是最新版本（如果你vscode编辑器不符合该版本则无法进行调试），按照自身需求修改vscode版本和对应的依赖中types&#x2F;vscode版本。更多配置项会在后续解读</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;todolist&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;displayName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;todolist&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;description&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;0.0.1&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;engines&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;vscode&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^1.71.0&quot;</span></span><br><span class="line">     <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">     <span class="attr">&quot;categories&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;Other&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">     <span class="attr">&quot;activationEvents&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="string">&quot;onCommand:todolist.helloWorld&quot;</span></span><br><span class="line">     <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">     <span class="attr">&quot;main&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./out/extension.js&quot;</span><span class="punctuation">,</span></span><br><span class="line">     <span class="attr">&quot;contributes&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">         <span class="attr">&quot;commands&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">             <span class="punctuation">&#123;</span></span><br><span class="line">                 <span class="attr">&quot;command&quot;</span><span class="punctuation">:</span> <span class="string">&quot;todolist.helloWorld&quot;</span><span class="punctuation">,</span></span><br><span class="line">                 <span class="attr">&quot;title&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Hello World&quot;</span></span><br><span class="line">             <span class="punctuation">&#125;</span></span><br><span class="line">	<span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    ...省略..</span><br><span class="line"><span class="punctuation">&#125;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>从package.json中，我们得知入口文件是out&#x2F;extension.js，因为脚手架选择了typescript开发，所以入口源代码在src&#x2F;extension.ts。入口文件中主要导出2个函数：<code>activate</code>插件激活时触发。<code>deactivate</code>插件被停用时触发，大多数情况我们不会用到deactivate，所以可以直接删除。</p>
+<p><code>activate</code>函数接受一个context对象用于获取vscode上下文，通过<code>vscode.commands.registerCommand</code>注册我们在package.json中定义的命令，并且传入一个回调函数，该回调函数会在命令执行时触发。<code>registerCommand</code>返回一个Disposable对象，我们需要通过<code>context.subscriptions.push</code>完成了todolist.helloWorld命令的注册。至此我们完成了command方法的注册与实现。当触发命令时会显示Hello World form todolist!的提示框</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/e319aa5ac3dc413b93183a09a690eb55~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<p>总结一下，对于command注册流程：</p>
+<ol>
+<li>通过package.json注册command</li>
+<li>通过vscode.commands.registerCommand传入package.json中配置的command作为唯一key进行注册</li>
+<li>把注册返回的方法添加到vscode的订阅中</li>
+</ol>
+<p>大部分注册类插件的步骤大致如此</p>
+<p>现在我们通过F5运行插件，因为脚手架配置了vscode task任务，所以会自动把ts编译成js并放入out目录。运行插件后会打开一个拥有该插件的开发环境的vscode编辑器，可以在该开发环境中进行使用当前开发的插件功能。并且可以通过vscode的断点功能进行断点调试。我们还可以通过打开vscode自带的开发者工具（帮助-&gt;切换到开发人员工具）对控制台进行查看调试</p>
+<h2 id="活动栏导航"><a href="#活动栏导航" class="headerlink" title="活动栏导航"></a>活动栏导航</h2><p>项目创建完成后，我们开始我们的第一个功能开发——活动栏导航，活动栏导航主要是通过package.json中，先看看配置后整体的内容：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">&quot;activationEvents&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="comment">// 绑定激活事件</span></span><br><span class="line">    <span class="string">&quot;onView:todolist-view&quot;</span></span><br><span class="line"><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line"><span class="attr">&quot;main&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./out/extension.js&quot;</span><span class="punctuation">,</span></span><br><span class="line"><span class="attr">&quot;contributes&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="comment">// 视图容器</span></span><br><span class="line">    <span class="attr">&quot;viewsContainers&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="comment">// 注册活动栏</span></span><br><span class="line">	<span class="attr">&quot;activitybar&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;todolist-container&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;title&quot;</span><span class="punctuation">:</span> <span class="string">&quot;待办事项&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;icon&quot;</span><span class="punctuation">:</span> <span class="string">&quot;assets/images/logo.svg&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="comment">// 视图</span></span><br><span class="line">    <span class="attr">&quot;views&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="comment">// 对应视图容器中注册的id</span></span><br><span class="line">        <span class="attr">&quot;todolist-container&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">            <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;todolist-view&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;列表&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;webview&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">]</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br></pre></td></tr></table></figure>
+
+<p>其中<code>contributes.viewsContainers.activitybar</code>是对活动栏导航进行配置，该配置下<code>id</code>表示容器的唯一ID，views视图会通过该ID与容器建立关联关系；<code>title</code>导航入口名称，当鼠标hover上去后显示的名字；<code>icon</code>导航入口的图标，官方建议使用24*24、单色、SVG格式的文件</p>
+<p>配置了活动栏，我们需要对其绑定对应的视图配置。通过<code>contributes.views.$&#123;viewsContainerId&#125;</code>配置进行关联（viewsContainerId就是viewsContainers里对应的容器id），容器与视图是一对多的关系，所以对应是一个数组格式，该数组接受一个view配置，<code>id</code>为当前view的唯一id，该id也用于之后完成该视图的数据注册传入的key；<code>name</code>表示视图的title名称；<code>type</code>表示视图的类型，默认为tree，可选值有webview。</p>
+<p>在实际运用中，我们只有在选中当前活动栏导航时才有必要激活插件，所以为了减少不必要的开销，我们通过设置<code>activationEvents</code>为<code>onView:$&#123;viewId&#125;</code>的方式来激活插件(viewId就是views中注册的id)，即：当前用户点击了todolist入口后，就会激活插件。</p>
+<p>从配置上可以看出，其实viewsContainers配置就是我们在布局中提到的container，每个viewsContainer都会对应一个或多个的items，当前插件中对应的items就是注册的视图</p>
+<p>效果图</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b8ff6de0d029439c8aef3e88223f8928~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<h2 id="实现主侧边栏webview"><a href="#实现主侧边栏webview" class="headerlink" title="实现主侧边栏webview"></a>实现主侧边栏webview</h2><p>刚才我们在配置中定义了视图的类型是webview，所以我们需要实现一个<code>WebviewViewProvider</code>类，该类需要实现一个<code>resolveWebviewView</code>的方法，该方法的第一个参数返回一个<code>webviewView</code>的对象，代码中可以通过该对象对webview进行操作。通过设置webview的html进行webview的渲染。viewId则是配置中该视图对应的id，用于注册使用。这里创建了todolistWebview文件用于实现该方法</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">WebviewView</span>, <span class="title class_">WebviewViewProvider</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;vscode&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">TodoListWebView</span> <span class="keyword">implements</span> <span class="title class_">WebviewViewProvider</span> &#123;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="attr">viewId</span>: <span class="built_in">string</span> = <span class="string">&#x27;todolist-view&#x27;</span>;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">resolveWebviewView</span>(<span class="attr">webviewView</span>: <span class="title class_">WebviewView</span>): <span class="built_in">void</span> | <span class="title class_">Thenable</span>&lt;<span class="built_in">void</span>&gt; &#123;</span><br><span class="line">    webviewView.<span class="property">webview</span>.<span class="property">html</span> = <span class="string">`</span></span><br><span class="line"><span class="string">      &lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="string">      &lt;html lang=&quot;en&quot;&gt;</span></span><br><span class="line"><span class="string">      &lt;head&gt;</span></span><br><span class="line"><span class="string">        &lt;meta charset=&quot;UTF-8&quot;&gt;</span></span><br><span class="line"><span class="string">        &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;</span></span><br><span class="line"><span class="string">        &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;</span></span><br><span class="line"><span class="string">        &lt;title&gt;todolist&lt;/title&gt;</span></span><br><span class="line"><span class="string">      &lt;/head&gt;</span></span><br><span class="line"><span class="string">      &lt;body&gt;</span></span><br><span class="line"><span class="string">        &lt;div&gt;hello todolist&lt;/div&gt;</span></span><br><span class="line"><span class="string">      &lt;/body&gt;</span></span><br><span class="line"><span class="string">      &lt;/html&gt;</span></span><br><span class="line"><span class="string">    `</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在入口文件通过registerWebviewViewProvider方法进行注册</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> vscode <span class="keyword">from</span> <span class="string">&#x27;vscode&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">TodoListWebView</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;./todolistWebview&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">activate</span>(<span class="params">context: vscode.ExtensionContext</span>) &#123;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">const</span> todolistWebview = <span class="keyword">new</span> <span class="title class_">TodoListWebView</span>();</span><br><span class="line"></span><br><span class="line">	context.<span class="property">subscriptions</span>.<span class="title function_">push</span>(</span><br><span class="line">		vscode.<span class="property">window</span>.<span class="title function_">registerWebviewViewProvider</span>(<span class="title class_">TodoListWebView</span>.<span class="property">viewId</span>, todolistWebview)</span><br><span class="line">	)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">deactivate</span>(<span class="params"></span>) &#123;&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>效果图</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d176580979f1457ebb1429f72be0729f~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<h2 id="功能开发"><a href="#功能开发" class="headerlink" title="功能开发"></a>功能开发</h2><p>上面我们已经完成了webview加载html的功能，现在使用我们熟悉的html+css+js的方式来完成这个todolist功能开发。这部分内容基本是我们熟知的开发模式不再过多描述。主要介绍我们应该如何加载静态资源和webview与脚本如果通信。</p>
+<p>首先我们需要把js和css这类资源放到项目中，由于webview无法直接读取本地路径在设置资源路径时需要通过<code>webview.asWebviewUri</code>对路径进行转换。拼接方式为：插件路径（通过<code>context.extensionUri</code>获取当前插件路径）+ 资源路径。拼接时使用<code>vscode.Uri.joinPath</code>对路径进行拼接。 最后通过实例化TodoListWebview时把context传入类中进行使用。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">TodoListWebView</span> <span class="keyword">implements</span> <span class="title class_">WebviewViewProvider</span> &#123;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"></span></span><br><span class="line"><span class="params">    <span class="keyword">private</span> <span class="keyword">readonly</span> context: vscode.ExtensionContext</span></span><br><span class="line"><span class="params">  </span>) &#123;&#125;</span><br><span class="line">  </span><br><span class="line">  <span class="title function_">resolveWebviewView</span>(<span class="params">webviewView: WebviewView</span>) &#123;</span><br><span class="line">      webviewView.<span class="property">webview</span>.<span class="property">options</span> = &#123;</span><br><span class="line">        <span class="attr">enableScripts</span>: <span class="literal">true</span>,</span><br><span class="line">      &#125;</span><br><span class="line">  </span><br><span class="line">      <span class="keyword">const</span> cssUri = <span class="variable language_">this</span>.<span class="property">webview</span>.<span class="title function_">asWebviewUri</span>(vscode.<span class="property">Uri</span>.<span class="title function_">joinPath</span>(<span class="variable language_">this</span>.<span class="property">context</span>.<span class="property">extensionUri</span>, <span class="string">&#x27;assets&#x27;</span>, <span class="string">&#x27;source&#x27;</span>, <span class="string">&#x27;index.css&#x27;</span>));</span><br><span class="line">      <span class="keyword">const</span> scriptUri = <span class="variable language_">this</span>.<span class="property">webview</span>.<span class="title function_">asWebviewUri</span>(vscode.<span class="property">Uri</span>.<span class="title function_">joinPath</span>(<span class="variable language_">this</span>.<span class="property">context</span>.<span class="property">extensionUri</span>, <span class="string">&#x27;assets&#x27;</span>, <span class="string">&#x27;source&#x27;</span>, <span class="string">&#x27;index.js&#x27;</span>));</span><br><span class="line">      </span><br><span class="line">      webviewView.<span class="property">webview</span>.<span class="property">html</span> = <span class="string">`</span></span><br><span class="line"><span class="string">          &lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="string">          &lt;html lang=&quot;en&quot;&gt;</span></span><br><span class="line"><span class="string">          &lt;head&gt;</span></span><br><span class="line"><span class="string">            &lt;meta charset=&quot;UTF-8&quot;&gt;</span></span><br><span class="line"><span class="string">            &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;</span></span><br><span class="line"><span class="string">            &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;</span></span><br><span class="line"><span class="string">            &lt;title&gt;todolist&lt;/title&gt;</span></span><br><span class="line"><span class="string">            &lt;link href=&quot;<span class="subst">$&#123;cssUri&#125;</span>&quot; rel=&quot;stylesheet&quot;/&gt;</span></span><br><span class="line"><span class="string">          &lt;/head&gt;</span></span><br><span class="line"><span class="string">          &lt;body&gt;</span></span><br><span class="line"><span class="string">            &lt;div&gt;</span></span><br><span class="line"><span class="string">              &lt;ul id=&quot;list&quot;&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">              &lt;/ul&gt;</span></span><br><span class="line"><span class="string">              &lt;div&gt;</span></span><br><span class="line"><span class="string">                &lt;input id=&quot;input&quot; placeholder=&quot;请输入&quot;/&gt;</span></span><br><span class="line"><span class="string">                &lt;button id=&quot;add&quot;&gt;添加&lt;/button&gt;</span></span><br><span class="line"><span class="string">              &lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;/div&gt;</span></span><br><span class="line"><span class="string">            &lt;script src=&quot;<span class="subst">$&#123;scriptUri&#125;</span>&quot;&gt;&lt;/script&gt;</span></span><br><span class="line"><span class="string">          &lt;/body&gt;</span></span><br><span class="line"><span class="string">          &lt;/html&gt;</span></span><br><span class="line"><span class="string">        `</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于webview本身默认禁止js脚本加载，所以在resolveWebviewView方法中，需要设置<code>webview.options.enableScripts</code>开启加载js脚本的能力，否则无法执行脚本文件。</p>
+<p>其次关于通信方面，webview和脚本通过postMessage进行交互通信，webview可以使用<code>onDidReceiveMessage</code>对脚本的传输进行监听，也可以通过<code>postMessage</code>对脚本发送消息。脚本通过window.addEventListener(‘message’, event)进行监听，而发送消息需要使用vscode在webview中全局挂载的<code>acquireVsCodeApi</code>方法，通过该方法获取到vscode提供的接口，之后通过该方法返回的对象方法中的<code>postMessage</code>对webview发送消息。其余关于todolist功能相关代码本文不做重点，可以通过源码进行查看。</p>
+<p>脚本侧示例</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function">() =&gt;</span> (</span><br><span class="line">    <span class="keyword">const</span> vscode = <span class="title function_">acquireVsCodeApi</span>();</span><br><span class="line">    vscode.<span class="title function_">postMessage</span>(&#123; <span class="attr">type</span>: <span class="string">&#x27;finishMessage&#x27;</span> &#125;);</span><br><span class="line">))()</span><br></pre></td></tr></table></figure>
+<p>webview侧接受示例：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">class</span> <span class="title class_">TodoListWebView</span> <span class="keyword">implements</span> <span class="title class_">WebviewViewProvider</span> &#123;</span><br><span class="line">    <span class="comment">//...省略...</span></span><br><span class="line">    <span class="title function_">resolveWebviewView</span>(<span class="attr">webviewView</span>: <span class="title class_">WebviewView</span>): <span class="built_in">void</span> | <span class="title class_">Thenable</span>&lt;<span class="built_in">void</span>&gt; &#123;</span><br><span class="line">       <span class="variable language_">this</span>.<span class="property">webview</span>.<span class="title function_">onDidReceiveMessage</span>(<span class="function">(<span class="params">message</span>) =&gt;</span> &#123;</span><br><span class="line">          <span class="keyword">switch</span> (message.<span class="property">type</span>) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;finishMessage&#x27;</span>:</span><br><span class="line">              <span class="variable language_">this</span>.<span class="title function_">finishMessage</span>()</span><br><span class="line">              <span class="keyword">break</span>;</span><br><span class="line">            <span class="attr">default</span>:</span><br><span class="line">              <span class="keyword">break</span>;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  <span class="title function_">finishMessage</span>(<span class="params"></span>) &#123;</span><br><span class="line">    vscode.<span class="property">window</span>.<span class="title function_">showInformationMessage</span>(<span class="string">&#x27;继续加油&#x27;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="数据持久化"><a href="#数据持久化" class="headerlink" title="数据持久化"></a>数据持久化</h2><p>整个Todolist功能已经基本完成了，现在我们每次关闭后vscode后，上次填写的todo数据都需要重新创建，这并不符合我们预期，我们期望能数据持久化。vscode对数据持久化的方式有：</p>
+<p><code>ExtensionContext.workspaceState</code>：工作空间存储，通过编写键&#x2F;值对存储，并在再次打开同一个工作区时将其恢复。</p>
+<p><code>ExtensionContext.globalState</code>：全局存储，通过编写键&#x2F;值对存储。并且可以通过setKeysForSync进行跨机器同步。</p>
+<p>除去上面2种方式还有一种webview独有的持久化，通过上文提到的<code>acquireVsCodeApi()</code>，该方法返回的对象中拥有getState和setState方法，也是通过键&#x2F;值对方式存储。保存的数据在webview切换为隐藏状态或页面内容被销毁依然可以保存，只有当webview本身被销毁时才会销毁。在todolist中我们使用此类方式进行存储。</p>
+<p>存储示例：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> vscode = <span class="title function_">acquireVsCodeApi</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="attr">state</span>: <span class="title class_">IState</span>[] = vscode.<span class="title function_">getState</span>()?.<span class="property">todo</span> || [];</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">addTodo</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (input.<span class="property">value</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> li = <span class="title function_">createTodo</span>(input.<span class="property">value</span>);</span><br><span class="line">    listContainer?.<span class="title function_">appendChild</span>(li);</span><br><span class="line">    state.<span class="title function_">push</span>(&#123;</span><br><span class="line">      <span class="attr">finish</span>: <span class="literal">false</span>,</span><br><span class="line">      <span class="attr">text</span>: input.<span class="property">value</span>,</span><br><span class="line">      <span class="attr">id</span>: li.<span class="property">id</span></span><br><span class="line">    &#125;);</span><br><span class="line">    vscode.<span class="title function_">setState</span>(&#123; <span class="attr">todo</span>: state &#125;);</span><br><span class="line">    input.<span class="property">value</span> = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="插件发布"><a href="#插件发布" class="headerlink" title="插件发布"></a>插件发布</h2><p>完成功能开发后，我们就可以把插件打包发布到商店或打包成vsix文件，在发布前我们需要把README.md文档进行修改，修改后才能进行发布操作。这里我们使用vsix方式，需要先安装vsce包，安装后执行命令即可打包出插件。</p>
+<blockquote>
+<p>yarn add vsce -dev</p>
+<p>npx vsce package</p>
+</blockquote>
+<p>安装的方式也很多，可以直接通过vscode界面进行操作，也可以通过命令行进行安装</p>
+<blockquote>
+<p>code –install-extension [插件位置 *.vsix]</p>
+</blockquote>
+<h2 id="配置详解"><a href="#配置详解" class="headerlink" title="配置详解"></a>配置详解</h2><p>该插件开发只涉及到了部分配置，这里把其他配置均例举出来</p>
+<p>activationEvents</p>
+<table>
+<thead>
+<tr>
+<th>事件</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>onLanguage</td>
+<td>打开解析为特定语言文件时被激活，例如”onLanguage:javascript”</td>
+</tr>
+<tr>
+<td>onCommand</td>
+<td>在调用命令时被激活</td>
+</tr>
+<tr>
+<td>onDebug</td>
+<td>在启动调试的时候激活</td>
+</tr>
+<tr>
+<td>workspaceContains</td>
+<td>每当打开文件夹并且该文件夹包含至少一个与glob模式匹配的文件时，就会发出此激活事件并激活感兴趣的扩展名。如：”workspaceContains:**&#x2F;.editorconfig”</td>
+</tr>
+<tr>
+<td>onFileSystem</td>
+<td>每当读取来自特定方案的文件或文件夹时。如：”onFileSystem:sftp”</td>
+</tr>
+<tr>
+<td>onView</td>
+<td>侧栏中展开指定id的视图时。如：”onView:viewId”</td>
+</tr>
+<tr>
+<td>onUri</td>
+<td>打开该扩展的系统范围Uri时</td>
+</tr>
+<tr>
+<td>onWebviewPanel</td>
+<td>恢复匹配viewType的webview时触发</td>
+</tr>
+<tr>
+<td>onCustomEditor</td>
+<td>创建具有匹配的自定义编辑器时触发</td>
+</tr>
+<tr>
+<td>onAuthenticationRequest</td>
+<td>每当扩展请求具有<code>authentication.getSession()</code>匹配的<code>providerId</code>是触发</td>
+</tr>
+<tr>
+<td>onStartupFinished</td>
+<td>vscode启动后一段时间内被触发</td>
+</tr>
+<tr>
+<td>*</td>
+<td>在启动vscode后触发</td>
+</tr>
+</tbody></table>
+<p>contributes配置比较多，且每个配置都有对应的其他配置项，建议直接看<a class="link"   target="_blank" rel="noopener" href="https://code.visualstudio.com/api/references/contribution-points#contributes.breakpoints" >官网<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本次主要针对编辑器的概念进行总结和认知插件具备的能力，通过编写的todolist来引导对插件开发流程的熟悉，其中涉及到的api并不多。但这只是vscode中的冰山一角，vscode提供了丰富的api，我们可以通过在业务中发现的痛点加上自身的想象力去diy属于自己的效率插件来补充自身对插件的理解和熟练。</p>
+
+        </div>
+
+        
+
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/blog/2022/09/01/%E6%B4%8B%E8%91%B1%E6%A8%A1%E5%9E%8B%E2%80%94%E4%BB%8E%E7%90%86%E8%A7%A3%E5%88%B0%E5%AE%9E%E8%B7%B5/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">洋葱模型—从理解到实践</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">Gary</a>
+        </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/blog/js/utils.js"></script>
+
+<script src="/blog/js/main.js"></script>
+
+<script src="/blog/js/header-shrink.js"></script>
+
+<script src="/blog/js/back2top.js"></script>
+
+<script src="/blog/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>
