@@ -1,0 +1,12 @@
+base_info:
+  title: 随记
+  author: Gary
+  url: https://wenlei0617.github.io/blog/
+
+style:
+  primary_color: "#0066CC"
+
+  first_screen:
+    enable: true
+    background_img: /blog/images/bg.svg
+    description: 心怀热爱，奔赴山海

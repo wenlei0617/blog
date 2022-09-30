@@ -4,17 +4,17 @@
 
 # Site
 # 网站标题
-title: gary个人博客
+title: Gary个人博客
 # 网站副标题
 subtitle: ''
 # 网站描述
-description: ''
+description: '前端'
 # 网站关键词
-keywords:
+keywords: 
 # 作者
 author: gary
 # 网站使用的语言
-language: en
+language: zh-CN
 # 时区
 timezone: 'Asia/Shanghai'
 
@@ -127,8 +127,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
-
+theme: keep
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
